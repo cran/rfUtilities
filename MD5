@@ -1,0 +1,14 @@
+6f2a8be4d6a5a560c0673734de251ef3 *DESCRIPTION
+18e2570b1afb3dbdef097ecebb86acbd *NAMESPACE
+e7c87a599daad8247f5ca7da97e0c7f8 *R/MultiColinear.R
+bd005c6d1d27d4650910d2dd2a7bf312 *R/probPartialPlot.R
+172eb2dbb895271a903915f5f77c4417 *R/rf.ClassBalance.R
+19a6a98bafab592c0596b737e39b8e2b *R/rf.crossValidation.R
+3bfe9b02980a9295f8d8ba8a87ec0355 *R/rf.modelSel.R
+fcb9e661d83db9bf8cc1a92bcea76f27 *R/rf.significance.R
+79b873371dc576ba1b0056b9810e9b74 *man/MultiColinear.Rd
+6e7024af28bc874bc6a47034d59d7e6c *man/probPartialPlot.Rd
+05f423e508b6fa21722659d59c8a5eb0 *man/rf.ClassBalance.Rd
+6d753cfe619f28c29b94329b71ec2fc2 *man/rf.crossValidation.Rd
+f4883229aa82938fe7d3b4b678c63343 *man/rf.modelSel.Rd
+519b1662fd6010f1dcc58e381e9feed6 *man/rf.significance.Rd
