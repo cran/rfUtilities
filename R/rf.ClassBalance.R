@@ -3,7 +3,7 @@
 #'                                                                                                                                                                                                    
 #' @param ydata Response variable using index (i.e., [,2] or [,"SPP"] )                        
 #' @param xdata Independent variables using index (i.e., [,3:14] or [3:ncol(data)] )
-#' @param p p-value of covariance convergence (do not reccomend changing)
+#' @param p p-value of covariance convergence (do not recommend changing)
 #' @param cbf        Scaling factor to test if problem is imbalanced, default is size of majority class * 3
 #' @param sf         Majority subsampling factor. If sf=1 then random sample would be perfectly balanced with smallest class [s|0=n|1] whereas; sf=2 provides [s|0=(n|1*2)]
 #' @param ...        Additional arguments passed to randomForest
@@ -34,8 +34,8 @@
 #' # Percent of "virginica" observations
 #' length( iris$Species[iris$Species == "virginica"] ) / dim(iris)[1]*100
 #' 	
-#' rf.ClassBalance( ydata=iris[,"Species"], xdata=iris[,1:4], cbf=1 )
-rf.ClassBalance <- function (ydata, xdata, p=0.005, cbf=3, sf=2, ...) 
+#' rf.classBalance( ydata=iris[,"Species"], xdata=iris[,1:4], cbf=1 )
+rf.classBalance <- function (ydata, xdata, p=0.005, cbf=3, sf=2, ...) 
  {
   if (  class(ydata) != "factor" ) { ydata <- as.factor(ydata) }
   CompCov <- function(m1, m2, pVal=p) {

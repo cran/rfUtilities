@@ -1,2 +1,3 @@
 exportPattern("^[^\\.]")
-import(stats,graphics,randomForest,e1071)
+
+import(stats,graphics,randomForest)

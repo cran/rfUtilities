@@ -1,0 +1,6 @@
+rfUtilities_1.0-1
+=================
+
+* Fixed bug, in functions requiring randomForest class object, where stop error is issued when model is specified using formula interface
+* Added new function "rf.partial.ci" for Random Forests regression partial dependency plot with confidence intervals
+* Added new function "rf.class.sensitivity" for sensitivity test of class to cross-assignment 

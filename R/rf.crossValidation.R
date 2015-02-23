@@ -3,10 +3,10 @@
 #'    
 #' @param x random forest object
 #' @param xdata x data used in model
-#' @param p Percent data withold
+#' @param p Percent data withhold
 #' @param n Number of cross validations
 #' @param seed Sets random seed in R global environment
-#' @param plot plot crossvalidation error statitistic (TRUE/FALSE)
+#' @param plot plot cross-validation error statistic (TRUE/FALSE)
 #' @param ... Additional arguments passed to Random Forests 
 #'
 #' @return A list class object with the following components:
@@ -37,7 +37,7 @@
 #' ( rf.mdl <- randomForest(iris[,1:4], iris[,"Species"], ntree=501) )
 #'   ( rf.cv <- rf.crossValidation(rf.mdl, iris[,1:4], p=0.10, n=99, ntree=501) ) 	
 rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, plot=TRUE, ...) {
-    if(!class(x) == "randomForest") stop( "x is not a randomForest object") 
+    if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
       if (!x$type == "classification") stop( "Random Forests Model is not classification") 
         if(!is.null(seed)) { set.seed(seed) }	
     sample.size = round( (length(x$y) * p) / length(x$classes), digits=0) 

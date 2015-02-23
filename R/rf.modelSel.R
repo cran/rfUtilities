@@ -7,7 +7,7 @@
 #' @param r Vector of importance percentiles to test i.e., c(0.1, 0.2, 0.5, 0.7, 0.9)
 #' @param final Run final model with selected variables (TRUE/FALSE)
 #' @param plot.imp Plot variable importance (TRUE/FALSE)
-#' @param seed Sets random seed in the R global environment. This is hightly suggested.
+#' @param seed Sets random seed in the R global environment. This is highly suggested.
 #' @param parsimony  Threshold for competing model (0-1)
 #' @param ... Arguments to pass to randomForest (e.g., ntree=1000, replace=TRUE, proximity=TRUE)
 #'
@@ -19,8 +19,8 @@
 #'  @return   parameters - Variables used in each tested model (list)
 #'
 #' @note If you want to run classification, make sure that y is a factor, otherwise runs in regression mode
-#' @note The mir scale option perfroms a row standardization and the se option performs normalization using The "standard errors" 
-#' @note of the permutation-based importance measure. Both options result in a 0-1 range but "se" summs to 1.
+#' @note The mir scale option performs a row standardization and the se option performs normalization using The "standard errors" 
+#' @note of the permutation-based importance measure. Both options result in a 0-1 range but "se" sums to 1.
 #' @note The selection criteria are calculated as: mir = i/max(i) and se = (i / se) / ( sum(i) / se).
 #' @note For regression the model selection criteria is; largest %variation explained, smallest MSE, and fewest parameters.
 #' @note For classification; Smallest OOB error, smallest maximum within class error, and fewest parameters.
@@ -58,7 +58,7 @@ rf.modelSel <- function(xdata, ydata, imp.scale="mir", r=c(0.25, 0.50, 0.75),
  rf.ImpScale <- function (x, scale="mir") { 
   if (!inherits(x, "randomForest")) 
        stop(deparse(substitute(x)), " Must be a randomForest object")
-	if(!is.null(seed)) { set.seed(seed) }
+	if(!is.null(seed)) { set.seed(seed) } else { set.seed(.Random.seed[1]) }
   if (x$type == "regression") {
    if (is.null(x$importanceSD) == TRUE | "%IncMSE" %in% 
        names(as.data.frame(x$importance)) == FALSE)

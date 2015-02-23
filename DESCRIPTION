@@ -1,21 +1,21 @@
 Package: rfUtilities
-Title: Random Forests model selection and performance evaluation
-Version: 1.0
-Date: 2014-11-09
-Authors@R: as.person(c(person(family="Evans", given="Jeffrey S.",
-    email="jeffrey_evans@tnc.org", role = c("aut", "cre")),
-    person(family="Murphy", given="Melanie A.", role = c("aut"))))
+Title: Random Forests Model Selection and Performance Evaluation
+Version: 1.0-1
+Date: 2015-02-23
+Authors@R: c(
+	person("Jeffrey S.", "Evans", role = c("cre", "aut"),  email = "jeffrey_evans@tnc.org"),
+	person("Melanie A.", "Murphy", role = "ctb") )
 Description: Utilities for Random Forest model selection, class balance
-    correction, significance test, cross validation and probability partial
+    correction, significance test, cross validation and partial dependency
     plots.
-Depends: R (>= 3.1.2), randomForest (>= 4.6-10), e1071 (>= 1.6-4)
+Depends: R (>= 3.1.2), randomForest (>= 4.6-10)
 Maintainer: Jeffrey S. Evans <jeffrey_evans@tnc.org>
 License: GPL-3
-URL: http://evansmurphy.wix.com/evansspatial
+URL: http://cran.r-project.org/web/packages/rfUtilities/
 NeedsCompilation: no
 Repository: CRAN
 LazyData: true
-Packaged: 2014-11-21 00:40:47 UTC; jevans
-Author: Jeffrey S. Evans [aut, cre],
-  Melanie A. Murphy [aut]
-Date/Publication: 2014-11-21 07:56:12
+Packaged: 2015-02-24 20:21:52 UTC; jevans
+Author: Jeffrey S. Evans [cre, aut],
+  Melanie A. Murphy [ctb]
+Date/Publication: 2015-02-24 22:05:25

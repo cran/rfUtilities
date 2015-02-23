@@ -1,19 +1,19 @@
 #' @title Random Forest model significance test 
-#' @description Performs significance test for classification and regression Rnadom Forests models. 
+#' @description Performs significance test for classification and regression Random Forests models. 
 #'
 #' @param x randomForest class object
 #' @param xdata Independent variables (x) used in model
 #' @param p p-value to test for significance in regression models
 #' @param q Quantile threshold to test classification models
 #' @param nperm Number of permutations
-#' @param plot Plot results (TRUE/FALSE). Dotted line represnts p-value/test quantile
+#' @param plot Plot results (TRUE/FALSE). Dotted line represents p-value/test quantile
 #' @param ... Additional Random Forests arguments 
 #'
 #' @return A list class object with the following components:
 #' @return For Regression problems:    
 #' @return     RandRsquare Vector of random R-square values 
-#' @return     Rsquare R-square of the "true" model  
-#' @return     Accept Is the model signigicant at specified p-value (TRUE/FALSE)
+#' @return     Rsquare The R-square of the "true" model  
+#' @return     Accept Is the model significant at specified p-value (TRUE/FALSE)
 #' @return     TestQuantile Quantile threshold used in significance plot
 #' @return     pValueThreshold Specified p-value
 #' @return     pValue p-values of randomizations
@@ -23,7 +23,7 @@
 #' @return     RandOOB Vector of random out-of-bag (OOB) values 
 #' @return     RandMaxError Maximum error of randomizations 
 #' @return     test.OOB Error if the "true" model
-#' @return     Accept Is the model signigicant at specified p-value (TRUE/FALSE)
+#' @return     Accept Is the model significant at specified p-value (TRUE/FALSE)
 #' @return     TestQuantile Quantile threshold used in significance plot
 #' @return     pValueThreshold Specified p-value
 #' @return     pValue p-values of randomizations
@@ -56,7 +56,7 @@
 #' }
 rf.significance <- function(x, xdata, q=0.99, p=0.05, nperm=999, plot=TRUE, ...) 
   {
-    if(!class(x) == "randomForest") stop( "x is not a randomForest object")
+  if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
   if (x$type == "classification") {
       Pval <- function(x, test, nperm) { 
         if ( length( x[x >= test] ) < 1 ) { 
