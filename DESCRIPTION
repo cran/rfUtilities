@@ -1,7 +1,7 @@
 Package: rfUtilities
 Title: Random Forests Model Selection and Performance Evaluation
-Version: 1.0-1
-Date: 2015-02-23
+Version: 1.0-2
+Date: 2015-09-24
 Authors@R: c(
 	person("Jeffrey S.", "Evans", role = c("cre", "aut"),  email = "jeffrey_evans@tnc.org"),
 	person("Melanie A.", "Murphy", role = "ctb") )
@@ -11,11 +11,11 @@ Description: Utilities for Random Forest model selection, class balance
 Depends: R (>= 3.1.2), randomForest (>= 4.6-10)
 Maintainer: Jeffrey S. Evans <jeffrey_evans@tnc.org>
 License: GPL-3
-URL: http://cran.r-project.org/web/packages/rfUtilities/
+URL: http://cran.r-project.org/package=rfUtilities
 NeedsCompilation: no
 Repository: CRAN
 LazyData: true
-Packaged: 2015-02-24 20:21:52 UTC; jevans
+Packaged: 2015-09-29 14:51:53 UTC; jevans
 Author: Jeffrey S. Evans [cre, aut],
   Melanie A. Murphy [ctb]
-Date/Publication: 2015-02-24 22:05:25
+Date/Publication: 2015-09-29 17:33:26

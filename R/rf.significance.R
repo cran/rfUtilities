@@ -66,15 +66,15 @@ rf.significance <- function(x, xdata, q=0.99, p=0.05, nperm=999, plot=TRUE, ...)
 	  	   }	
        return( error / nperm )
       } 				 
-	   test.oob <- median(x$err.rate[,1])
-	     test.max <- median(max(x$err.rate[,-1]))
+	   test.oob <- stats::median(x$err.rate[,1])
+	     test.max <- stats::median(max(x$err.rate[,-1]))
 		   rand.oob <- vector()
 		     rand.max <- vector()
       for( i in 1:nperm) {	
         rand.y <- sample(x$y, length(x$y)) 
           rf.test <- randomForest::randomForest(x=xdata, y=rand.y, ...)
-            rand.oob <- append(rand.oob, median(rf.test$err.rate[,1]) ) 
-			  rand.max <- append(rand.max, median(max(rf.test$err.rate[,-1])) )
+            rand.oob <- append(rand.oob, stats::median(rf.test$err.rate[,1]) ) 
+			  rand.max <- append(rand.max, stats::median(max(rf.test$err.rate[,-1])) )
         }
 	pValue=round(Pval(x=rand.oob, test=test.oob, nperm=nperm), digits=6)	
 	  if( pValue <= p ) accept=TRUE else accept=FALSE 
@@ -82,15 +82,15 @@ rf.significance <- function(x, xdata, q=0.99, p=0.05, nperm=999, plot=TRUE, ...)
 	      if (accept == FALSE) accept <- paste("MODEL NOT SIGNIFICANT AT p= ", pValue, sep="" )
     print(accept)
       if( plot == TRUE) { 
-	    den=density(rand.oob)
+	    den=stats::density(rand.oob)
           den$y <- den$y/max(den$y)		
-	        plot(den, type="n", xlim=c(min(c(rand.oob,test.oob)), 1), xlab="Error", ylab="",  
+	        graphics::plot(den, type="n", xlim=c(min(c(rand.oob,test.oob)), 1), xlab="Error", ylab="",  
 	  	         main="Distribution of OOB Error in randomized models")
-                   polygon(den, col="blue")
-                     abline(v=test.oob, col="black", lwd=1.5, lty=2)
-					 abline(v=quantile(rand.oob,p=q),lwd=1.5, lty=2, col="red") 
-              legend("topright", c("model", "null"), bg="white",  
-		             col=c("black","red"), lty=c(2,2), lwd=c(1.5,1.5) )				   
+                   graphics::polygon(den, col="blue")
+                     graphics::abline(v=test.oob, col="black", lwd=1.5, lty=2)
+					 graphics::abline(v=quantile(rand.oob,p=q),lwd=1.5, lty=2, col="red") 
+              graphics::legend("topright", c("model", "null"), bg="white",  
+		                col=c("black","red"), lty=c(2,2), lwd=c(1.5,1.5) )				   
 	    }
       return( list(RandOOB=rand.oob, RandMaxError=rand.max, Accept=accept, 
                    test.OOB=test.oob, test.MaxError=test.max, TestQuantile=q, 
@@ -106,23 +106,23 @@ rf.significance <- function(x, xdata, q=0.99, p=0.05, nperm=999, plot=TRUE, ...)
        return( error / nperm )
       } 				 
      if (is.factor(x$y)) stop("y CANNOT BE A FACTOR") 
-	   test.rsq <- median(x$rsq)
-	     test.mse <- median(x$mse)
+	   test.rsq <- stats::median(x$rsq)
+	     test.mse <- stats::median(x$mse)
 	       rand.dist <- vector() 
       for( i in 1:nperm) {	
         rand.y <- sample(x$y, length(x$y)) 
           rf.test <- randomForest::randomForest(x=xdata, y=rand.y, ...)
-            rand.dist <- append(rand.dist, median(rf.test$rsq)) 
+            rand.dist <- append(rand.dist, stats::median(rf.test$rsq)) 
         }	
 	  if( plot == TRUE) { 
-	    den=density(rand.dist)
+	    den=stats::density(rand.dist)
           den$y <- den$y/max(den$y)		
-	        plot(den, type="n", xlim=c(min(rand.dist), 1), xlab="R-square", ylab="",  
+	        graphics::plot(den, type="n", xlim=c(min(rand.dist), 1), xlab="R-square", ylab="",  
 	  	         main="Distribution of randomized models")
-                   polygon(den, col="blue")
-                     abline(v=test.rsq, col="black", lwd=1.5, lty=2)
-					 abline(v=quantile(rand.dist,p=q),lwd=1.5, lty=2, col="red") 
-              legend("topright", c("model", "null"), bg="white",  
+                   graphics::polygon(den, col="blue")
+                     graphics::abline(v=test.rsq, col="black", lwd=1.5, lty=2)
+					 graphics::abline(v=quantile(rand.dist,p=q),lwd=1.5, lty=2, col="red") 
+              graphics::legend("topright", c("model", "null"), bg="white",  
 		             col=c("black","red"), lty=c(2,2), lwd=c(1.5,1.5) )				   
 	    }
 	  pValue=round(Pval(x=rand.dist, test=test.rsq, nperm=nperm), digits=6)	

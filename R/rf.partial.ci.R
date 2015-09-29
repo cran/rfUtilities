@@ -52,5 +52,5 @@ rf.partial.ci <- function(m, x, yname, xname, lci=0.25, uci=0.75, delta=FALSE) {
             paste( paste(conf.int, "%", sep=""), "confidence interval"),sep="\n"))  
       polygon(c(m.ci[,xname], rev(m.ci[,xname])), c(m.ci$uci, rev(m.ci$lci)), col = "gray86")
       lines(m.ci[,xname], m.ci[,"y.hat.mean"], type = "b", pch = 20)
-  return(Plot = recordPlot())
+  return(Plot = grDevices::recordPlot())
 } 

@@ -59,7 +59,7 @@ rf.partial.prob <- function(x, pred.data, xname, which.class, w, prob=TRUE, plot
           x.data <- pred.data
           x.data[, xname] <- factor(rep(x.pt[i], n), levels = x.pt)
           pr <- predict(x, x.data, type = "prob")
-          y.pt[i] <- weighted.mean(log(ifelse(pr[, focus] > 0, pr[, focus], .Machine$double.eps)) -
+          y.pt[i] <- stats::weighted.mean(log(ifelse(pr[, focus] > 0, pr[, focus], .Machine$double.eps)) -
                        rowMeans(log(ifelse(pr > 0, pr, .Machine$double.eps))), w, na.rm=TRUE)
       }  
       if( prob == TRUE) { y.pt <- scale.dist(y.pt) } 
@@ -67,9 +67,9 @@ rf.partial.prob <- function(x, pred.data, xname, which.class, w, prob=TRUE, plot
         if(missing(xlab)) xlab=xname
 	    if(missing(ylab)) ylab=which.class
 	    if(missing(main)) main="Partial Dependency Plot"	
-	      barplot(y.pt, width=rep(1,length(y.pt)), col="blue",
-                  xlab=xlab, ylab=ylab, main=main,
-                  names.arg=x.pt, ...)
+	      graphics::barplot(y.pt, width=rep(1,length(y.pt)), col="blue",
+                            xlab=xlab, ylab=ylab, main=main,
+                            names.arg=x.pt, ...)
       }				  
     }	
 	
@@ -79,8 +79,8 @@ rf.partial.prob <- function(x, pred.data, xname, which.class, w, prob=TRUE, plot
         for (i in seq(along=x.pt)) {
           x.data <- pred.data
           x.data[, xname] <- rep(x.pt[i], n)
-          pr <- predict(x, x.data, type = "prob")
-          y.pt[i] <- weighted.mean(log(ifelse(pr[, focus] == 0, .Machine$double.eps, 
+          pr <- stats::predict(x, x.data, type = "prob")
+          y.pt[i] <- stats::weighted.mean(log(ifelse(pr[, focus] == 0, .Machine$double.eps, 
                pr[, focus])) - rowMeans(log(ifelse(pr == 0, .Machine$double.eps, pr))),
                w, na.rm=TRUE)
         }
@@ -90,17 +90,17 @@ rf.partial.prob <- function(x, pred.data, xname, which.class, w, prob=TRUE, plot
 	      if(missing(ylab)) ylab="probability"
 	        if(missing(main)) main=paste("Partial Dependency Plot for Class", which.class, sep=" - ") 			  
     if(smooth)  
-      plot(x.pt, smooth.spline(x.pt, y.pt)$y, type = "l", xlab=xlab, 
-		   ylab=ylab, main=main, ...)
+      graphics::plot(x.pt, smooth.spline(x.pt, y.pt)$y, type = "l", xlab=xlab, 
+		             ylab=ylab, main=main, ...)
 	if(raw == TRUE) lines( y=y.pt, x=x.pt, col="grey", lty=3) 
 	  } else {
-      plot(x.pt, y.pt, type = "l", xlab=xlab, ylab=ylab, main=main, ...)		
+      graphics::plot(x.pt, y.pt, type = "l", xlab=xlab, ylab=ylab, main=main, ...)		
       }	
     if (rug) {
       if (n.pt > 10) {
-        rug(quantile(xv, seq(0.1, 0.9, by=0.1)), side = 1)
+        graphics::rug(quantile(xv, seq(0.1, 0.9, by=0.1)), side = 1)
           } else {
-        rug(unique(xv, side = 1))
+        graphics::rug(unique(xv, side = 1))
         }
 	  }
     }
