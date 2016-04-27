@@ -1,12 +1,45 @@
 rfUtilities_1.0-1
 =================
 
-* Fixed bug, in functions requiring randomForest class object, where stop error is issued when model is specified using formula interface
-* Added new function "rf.partial.ci" for Random Forests regression partial dependency plot with confidence intervals
-* Added new function "rf.class.sensitivity" for sensitivity test of class to cross-assignment 
+* Fixed bug, in functions requiring randomForest class object, where stop error is issued when 
+    model is specified using formula interface.
+	
+* Added new function "rf.partial.ci" for Random Forests regression partial dependency plot with 
+    confidence intervals.
+	
+* Added new function "rf.class.sensitivity" for sensitivity test of class to cross-assignment. 
 
 rfUtilities_1.0-2
 =================
 
-* Fixed bug, in rf.modelSel where no model was returned when final=TRUE
-* Added new function  rf.imp.freq that prints/plots frequency of variable selection across classes
+* Fixed bug, in rf.modelSel where no model was returned when final=TRUE.
+
+* Added new function  rf.imp.freq that prints/plots frequency of variable selection 
+    across classes.
+
+rfUtilities_2.0-0
+=================
+
+* Major restructuring of the package, adding object classes along with print, plot and  
+    summary functions for classes.
+	
+* Added new function "accuracy" for a variety of classification accuracy statistics.  
+    Function is also called from rf.crossValidation. 
+	
+* Added new function "occurrence.threshold" for testing the sensitivity of probability 
+     thresholds.
+	 
+* Added new function "rf.effect.size" for calculating "parameter" effect size on  
+    classification or regression models using the Cohen's f2 statistic. 
+	
+* Added new function "rf.regression.fit" providing fit statistics for random forests 
+    regression models. 
+	
+* Rewrote and added class attribute to rf.significance function along with print, 
+    summary and plot generics.
+	
+* Rewrote and added class attribute to rf.crossValidation function along with print, 
+    summary and plot generics.
+	
+* Added users accuracy, producers accuracy and kappa to rf.crossValidation output.
+ 

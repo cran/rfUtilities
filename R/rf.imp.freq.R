@@ -25,6 +25,8 @@
 #'  data(iris)
 #'  iris.rf <- randomForest(Species ~ ., data=iris, importance=TRUE)
 #'  rf.imp.freq(iris.rf, p = 0.30)
+#'
+#' @export
 rf.imp.freq <- function(x, p = 0.60, plot = TRUE) {
   if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
   if (x$type == "classification" | x$type == "unsupervised") {
@@ -51,14 +53,14 @@ rf.imp.freq <- function(x, p = 0.60, plot = TRUE) {
        tmp.index <- which(is.na(match(vars,tmp))) 
        tmp.vars <- vars
        tmp.vars[tmp.index] <- NA		 
-    	 vars.df <- data.frame(vars.df, tmp.vars)
-    	   names(vars.df)[j+2] <- x.class
+       vars.df <- data.frame(vars.df, tmp.vars)
+         names(vars.df)[j+2] <- x.class
       }
 	vars.df <- data.frame(vars.df, var.freq=apply(vars.df[,2:ncol(vars.df)], MARGIN=1, 
                           FUN=function(x) { length(x[!is.na(x)]) }  ) )  
 	if(plot == TRUE) {
-	  barplot(vars.df$var.freq, names.arg=vars.df$vars, 
-	     main="Frequency of variable importance", las=2)
+	  graphics::barplot(vars.df$var.freq, names.arg=vars.df$vars, 
+	              main="Frequency of variable importance", las=2)
 	}
   return( list( frequency = vars.df, importance = importance) )
   }

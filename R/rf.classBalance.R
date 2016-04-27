@@ -35,6 +35,8 @@
 #' length( iris$Species[iris$Species == "virginica"] ) / dim(iris)[1]*100
 #' 	
 #' rf.classBalance( ydata=iris[,"Species"], xdata=iris[,1:4], cbf=1 )
+#'
+#' @export
 rf.classBalance <- function (ydata, xdata, p=0.005, cbf=3, sf=2, ...) 
  {
   if (  class(ydata) != "factor" ) { ydata <- as.factor(ydata) }
@@ -46,60 +48,60 @@ rf.classBalance <- function (ydata, xdata, p=0.005, cbf=3, sf=2, ...)
            n = n1 + n2
             s1 <- crossprod(m1[1:dim(m1)[1]])
              s2 <- crossprod(m2[1:dim(m2)[1]])
-              c1 = (1/(n1-1))*s1
-              c2 = (1/(n2-1))*s2
+              c1 = (1/(n1-1)) * s1
+              c2 = (1/(n2-1)) * s2
              c3 = (s1+s2)/(n-k)
             d = det(c3)
             d1 = det(c1)
            d2 = det(c2) 
-          m = ( (n-k)*log(d) ) - ( (n1-1)*log(d1) + (n2-1)*log(d2) )
-         h = 1-((2*p*p+3*p-1) / (6*(p+1)*(k-1)) * (1 / (n1-1)+1 / (n2-1)+1 / (n-k)))
-        chi = round(abs(m*h),digits=6)
-       dfree = p*(p+1)*(k-1)/2
-       print( paste("EQUIVALENCE p", chi, sep=": ") )
-          if ( (chi <= pVal ) == TRUE & (i > 2) |  (i > 20)  == TRUE ) { 
-               ( "TRUE" )
-                  } else {
-               ( "FALSE" ) 
-            }
-        }  		 
-      y <- ydata
+          m = ( (n - k) * log(d) ) - ( (n1 - 1) * log(d1) + (n2 - 1) * log(d2) )
+         h = 1 - ((2 * p * p + 3 * p - 1) / (6 * (p + 1) * (k - 1)) * 
+		         (1 / (n1 - 1) + 1 / (n2 - 1) + 1 / (n - k)))
+        chi = round(abs(m * h),digits=6)
+        dfree = p * (p + 1) * (k - 1) / 2
+        print( paste("EQUIVALENCE p", chi, sep=": ") )
+      if ( (chi <= pVal ) == TRUE & (i > 2) |  (i > 20)  == TRUE ) { 
+        ( "TRUE" )
+      } else {
+        ( "FALSE" ) 
+      }
+    }  		 
+    y <- ydata
     x <- xdata  		 		 
     class.ct <- table(y)
-      maj.class <- names(class.ct)[which.max(class.ct)]; maj.idx <- which.max(class.ct) 
-        min.class <- names(class.ct)[which.min(class.ct)]; min.idx <- which.min(class.ct)  
-          if ( ( class.ct[maj.idx] <= class.ct[min.idx] * cbf ) == TRUE) 
-            stop("CLASSES ARE BALANCED!")  	 
-              tmp.data <- data.frame(y, x)
-	        majority <- tmp.data[tmp.data[,"y"] == maj.class ,]       
-          minority <- tmp.data[tmp.data[,"y"] == min.class ,]    
-	    all.cov <- cov(majority[,names(x)])     
-	  test <- as.data.frame(array(0, dim=c( 0, dim(tmp.data)[2] )))
-    names(test) <- names(majority) 
-     if ( !is.na(match("rf.model",ls()))) rm(rf.model)
-        n <- dim(minority)[1]*sf                 
+    maj.class <- names(class.ct)[which.max(class.ct)]; maj.idx <- which.max(class.ct) 
+    min.class <- names(class.ct)[which.min(class.ct)]; min.idx <- which.min(class.ct)  
+      if ( ( class.ct[maj.idx] <= class.ct[min.idx] * cbf ) == TRUE) 
+        stop("CLASSES ARE BALANCED!")  	 
+        tmp.data <- data.frame(y, x)
+	    majority <- tmp.data[tmp.data[,"y"] == maj.class ,]       
+        minority <- tmp.data[tmp.data[,"y"] == min.class ,]    
+	    all.cov <- stats::cov(majority[,names(x)])     
+	    test <- as.data.frame(array(0, dim=c( 0, dim(tmp.data)[2] )))
+        names(test) <- names(majority) 
+      if ( !is.na(match("rf.model",ls()))) rm(rf.model)
+        n <- dim(minority)[1] * sf                 
     i=0; converge = c("FALSE")  
       while (converge != "TRUE" )
        {
        i=i+1
         ns <- sample(1:nrow(majority), n) 
-          class.sample <- majority[ns, ]
-            mdata <- rbind(minority, class.sample)   
-        if (  class(mdata[,1]) != "factor" ) 
-                   { mdata[,1] <- as.factor(mdata[,1]) }
-        if ( !is.na(match("rf.model",ls()))) {               
+        class.sample <- majority[ns, ]
+        mdata <- rbind(minority, class.sample)   
+          if (  class(mdata[,1]) != "factor" ) { mdata[,1] <- as.factor(mdata[,1]) }
+          if ( !is.na(match("rf.model",ls()))) {               
             rf.fit <- randomForest::randomForest(x=mdata[,2:ncol(mdata)], y=mdata[,1], ...)                           
             rf.model <- randomForest::combine(rf.fit, rf.model)           
-              OOB <- ( OOB + median(rf.fit$err.rate[,1]) ) 
-                CM <- (CM + rf.fit$confusion)                 
-               } else {
+            OOB <- ( OOB + stats::median(rf.fit$err.rate[,1]) ) 
+            CM <- (CM + rf.fit$confusion)                 
+          } else {
             rf.model <- randomForest::randomForest(x=mdata[,2:ncol(mdata)], y=mdata[,1], ...)  
-              OOB <- median(rf.model$err.rate[,1]) 
-                CM <- rf.model$confusion                                    
-         }
+            OOB <- stats::median(rf.model$err.rate[,1]) 
+            CM <- rf.model$confusion                                    
+          }
         test <- rbind(test, class.sample)    
-          test.cov <- cov( test[,names(x)] )
-            converge <- CompCov(all.cov, test.cov)  
+        test.cov <- stats::cov( test[,names(x)] )
+        converge <- CompCov(all.cov, test.cov)  
     }
         OOB <- OOB / i
       CM[,3] <- CM[,3] / i

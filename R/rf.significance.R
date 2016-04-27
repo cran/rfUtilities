@@ -6,7 +6,6 @@
 #' @param p p-value to test for significance in regression models
 #' @param q Quantile threshold to test classification models
 #' @param nperm Number of permutations
-#' @param plot Plot results (TRUE/FALSE). Dotted line represents p-value/test quantile
 #' @param ... Additional Random Forests arguments 
 #'
 #' @return A list class object with the following components:
@@ -42,9 +41,9 @@
 #' require(randomForest)
 #'   set.seed(1234)	
 #'     data(airquality)
-#'       airquality <- na.omit(airquality)
+#'     airquality <- na.omit(airquality)
 #'  ( rf.mdl <- randomForest(x=airquality[,2:6], y=airquality[,1]) )
-#'    ( rf.test <- rf.significance(rf.mdl, airquality[,2:6], nperm=99, ntree=501) )
+#'    ( rf.perm <- rf.significance(rf.mdl, airquality[,2:6], nperm=99, ntree=501) )
 #'  
 #' # Classification
 #' require(randomForest)
@@ -54,83 +53,62 @@
 #'  ( rf.mdl <- randomForest(iris[,1:4], iris[,"Species"], ntree=501) )
 #'    ( rf.perm <- rf.significance(rf.mdl, iris[,1:4], nperm=99, ntree=501) ) 
 #' }
-rf.significance <- function(x, xdata, q=0.99, p=0.05, nperm=999, plot=TRUE, ...) 
+#'
+#' @exportClass significance 
+#' @export
+rf.significance <- function(x, xdata, q=0.99, p=0.05, nperm=999, ...) 
   {
   if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
-  if (x$type == "classification") {
-      Pval <- function(x, test, nperm) { 
-        if ( length( x[x >= test] ) < 1 ) { 
-	          error = 1 
-	          } else { 
-	  	    error = length( x[x < test] ) + 1
-	  	   }	
-       return( error / nperm )
-      } 				 
-	   test.oob <- stats::median(x$err.rate[,1])
-	     test.max <- stats::median(max(x$err.rate[,-1]))
-		   rand.oob <- vector()
-		     rand.max <- vector()
-      for( i in 1:nperm) {	
-        rand.y <- sample(x$y, length(x$y)) 
-          rf.test <- randomForest::randomForest(x=xdata, y=rand.y, ...)
-            rand.oob <- append(rand.oob, stats::median(rf.test$err.rate[,1]) ) 
-			  rand.max <- append(rand.max, stats::median(max(rf.test$err.rate[,-1])) )
-        }
-	pValue=round(Pval(x=rand.oob, test=test.oob, nperm=nperm), digits=6)	
-	  if( pValue <= p ) accept=TRUE else accept=FALSE 
-        if (accept == TRUE) accept <- paste("MODEL SIGNIFICANT AT p=", pValue, sep="" ) 
-	      if (accept == FALSE) accept <- paste("MODEL NOT SIGNIFICANT AT p= ", pValue, sep="" )
-    print(accept)
-      if( plot == TRUE) { 
-	    den=stats::density(rand.oob)
-          den$y <- den$y/max(den$y)		
-	        graphics::plot(den, type="n", xlim=c(min(c(rand.oob,test.oob)), 1), xlab="Error", ylab="",  
-	  	         main="Distribution of OOB Error in randomized models")
-                   graphics::polygon(den, col="blue")
-                     graphics::abline(v=test.oob, col="black", lwd=1.5, lty=2)
-					 graphics::abline(v=quantile(rand.oob,p=q),lwd=1.5, lty=2, col="red") 
-              graphics::legend("topright", c("model", "null"), bg="white",  
-		                col=c("black","red"), lty=c(2,2), lwd=c(1.5,1.5) )				   
-	    }
-      return( list(RandOOB=rand.oob, RandMaxError=rand.max, Accept=accept, 
-                   test.OOB=test.oob, test.MaxError=test.max, TestQuantile=q, 
-                   pValueThreshold=p, pValue=pValue, nPerm=nperm) )
+    class.p <- function(x, test, nperm) { 
+      if ( length( x[x >= test] ) < 1 ) { 
+	     error = 1 
+	  } else { 
+	  	  error = length( x[x < test] ) 
+	  }	
+      return( error / nperm )
     } 
-   if (x$type == "regression") {
-     Pval <- function(x, test, nperm) { 
-        if ( length( x[x >= test] ) < 1 ) { 
-	          error = 1 
-	          } else { 
-	  	    error = length( x[x >= test] ) + 1
-	  	   }	
-       return( error / nperm )
-      } 				 
-     if (is.factor(x$y)) stop("y CANNOT BE A FACTOR") 
-	   test.rsq <- stats::median(x$rsq)
-	     test.mse <- stats::median(x$mse)
-	       rand.dist <- vector() 
+    regress.p <- function(x, test, nperm) { 
+      if ( length( x[x >= test] ) < 1 ) { 
+	      error = 1 
+	  } else { 
+	  	  error = length( x[x >= test] ) 
+	 }	
+      return( error / nperm )
+    } 	
+  
+  if (x$type == "classification") {  
+	test.oob <- stats::median(x$err.rate[,1])
+	test.max <- stats::median(max(x$err.rate[,-1]))
+	rand.oob <- vector()
+	rand.max <- vector()
       for( i in 1:nperm) {	
         rand.y <- sample(x$y, length(x$y)) 
           rf.test <- randomForest::randomForest(x=xdata, y=rand.y, ...)
-            rand.dist <- append(rand.dist, stats::median(rf.test$rsq)) 
-        }	
-	  if( plot == TRUE) { 
-	    den=stats::density(rand.dist)
-          den$y <- den$y/max(den$y)		
-	        graphics::plot(den, type="n", xlim=c(min(rand.dist), 1), xlab="R-square", ylab="",  
-	  	         main="Distribution of randomized models")
-                   graphics::polygon(den, col="blue")
-                     graphics::abline(v=test.rsq, col="black", lwd=1.5, lty=2)
-					 graphics::abline(v=quantile(rand.dist,p=q),lwd=1.5, lty=2, col="red") 
-              graphics::legend("topright", c("model", "null"), bg="white",  
-		             col=c("black","red"), lty=c(2,2), lwd=c(1.5,1.5) )				   
-	    }
-	  pValue=round(Pval(x=rand.dist, test=test.rsq, nperm=nperm), digits=6)	
-	if( pValue <= p ) accept=TRUE else accept=FALSE 
-      if (accept == TRUE) accept <- paste("MODEL SIGNIFICANT AT p=", pValue, sep="" ) 
-	    if (accept == FALSE) accept <- paste("MODEL NOT SIGNIFICANT AT p= ", pValue, sep="" )
-    print(accept)		
-      return( list(RandRsquare=rand.dist, Rsquare=test.rsq, Accept=accept, TestQuantile=q, 
-                   pValueThreshold=p, pValue=pValue, nPerm=nperm) )
+          rand.oob <- append(rand.oob, stats::median(rf.test$err.rate[,1]) ) 
+		rand.max <- append(rand.max, stats::median(max(rf.test$err.rate[,-1])) )
+      }
+	pValue=round(class.p(x=rand.oob, test=test.oob, nperm=nperm), digits=6)	
+    sig <- list(RandOOB=rand.oob, RandMaxError=rand.max, 
+                test.OOB=test.oob, test.MaxError=test.max, TestQuantile=q, 
+                pValueThreshold=p, pValue=pValue, nPerm=nperm, rf.type=x$type)
+      class(sig) <- c("significance","list")			   
+	return( sig )				
+    }
+	
+   if (x$type == "regression") {			 
+    if (is.factor(x$y)) stop("y cannot be a factor") 
+	  test.rsq <- stats::median(x$rsq)
+	    test.mse <- stats::median(x$mse)
+	  rand.dist <- vector() 
+    for( i in 1:nperm) {	
+      rand.y <- sample(x$y, length(x$y)) 
+        rf.test <- randomForest::randomForest(x=xdata, y=rand.y, ...)
+      rand.dist <- append(rand.dist, stats::median(rf.test$rsq)) 
+    }	
+	pValue=round(regress.p(x=rand.dist, test=test.rsq, nperm=nperm), digits=6)
+    sig <- list(RandRsquare=rand.dist, Rsquare=test.rsq, TestQuantile=q, 
+                pValueThreshold=p, pValue=pValue, nPerm=nperm, rf.type=x$type) 
+	  class(sig) <- c("significance","list")			   
+	return( sig )			   
     }
 } 

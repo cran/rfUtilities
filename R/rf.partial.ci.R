@@ -26,6 +26,7 @@
 #'      rf.partial.ci(m=rf.ozone, x=airquality, yname="Ozone", xname=i, delta=TRUE) 
 #'    } 
 #'
+#' @export
 rf.partial.ci <- function(m, x, yname, xname, lci=0.25, uci=0.75, delta=FALSE) {
   if (!inherits(m, "randomForest")) stop("m is not randomForest class object")
   if(m$type != "regression") stop("classification is not supported")
@@ -34,23 +35,23 @@ rf.partial.ci <- function(m, x, yname, xname, lci=0.25, uci=0.75, delta=FALSE) {
     y.hat.mean <- vector()
     y.hat.lb <- vector()
     y.hat.ub <- vector()
-    y <- predict(m, x)
+    y <- stats::predict(m, x)
   for (i in 1:length(temp)){
     x[, xname] <- temp[i]
-    y.hat <- predict(m, x)
+    y.hat <- stats::predict(m, x)
     if (delta == TRUE){ y.hat <- y.hat - y }
-    y.hat.mean[i] <- weighted.mean(y.hat)
-    y.hat.lb[i] <- quantile(y.hat, lci)
-    y.hat.ub[i] <- quantile(y.hat, uci)
+    y.hat.mean[i] <- stats::weighted.mean(y.hat)
+    y.hat.lb[i] <- stats::quantile(y.hat, lci)
+    y.hat.ub[i] <- stats::quantile(y.hat, uci)
   }
   m.ci <- as.data.frame(cbind(temp, y.hat.mean, y.hat.lb, y.hat.ub))
   names(m.ci) <- c(xname, "y.hat.mean", "lci", "uci")
     y.lim=c(min(c(m.ci$uci, rev(m.ci$lci))), max(c(c(m.ci$uci, rev(m.ci$lci)))))  
-    plot(m.ci[,xname], m.ci[,"y.hat.mean"], type = "n", ylim=y.lim, 
-      xlab=xname, ylab=paste("Predicted values of", yname, sep=" ") )
-      title(paste(paste("Partial Dependence of", yname, "on", xname),
-            paste( paste(conf.int, "%", sep=""), "confidence interval"),sep="\n"))  
-      polygon(c(m.ci[,xname], rev(m.ci[,xname])), c(m.ci$uci, rev(m.ci$lci)), col = "gray86")
-      lines(m.ci[,xname], m.ci[,"y.hat.mean"], type = "b", pch = 20)
+    graphics::plot(m.ci[,xname], m.ci[,"y.hat.mean"], type = "n", ylim=y.lim, 
+              xlab=xname, ylab=paste("Predicted values of", yname, sep=" ") )
+      graphics::title(paste(paste("Partial Dependence of", yname, "on", xname),
+         paste( paste(conf.int, "%", sep=""), "confidence interval"),sep="\n"))  
+      graphics::polygon(c(m.ci[,xname], rev(m.ci[,xname])), c(m.ci$uci, rev(m.ci$lci)), col = "gray86")
+      graphics::lines(m.ci[,xname], m.ci[,"y.hat.mean"], type = "b", pch = 20)
   return(Plot = grDevices::recordPlot())
 } 

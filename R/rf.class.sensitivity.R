@@ -26,7 +26,8 @@
 #' @references
 #' Gardner, R.H., R.V. O'Neill, M.G. Turner, and V.H. Dale (1989). Quantifying scale-dependent effects of animal movements with simple percolation models. Landscape Ecology 3:217-227.
 #'
-#' @examples	
+#' @examples
+#' library(randomForest)	
 #' data(iris)
 #'   y <- as.factor(ifelse(iris$Species == "setosa" | 
 #'                  iris$Species == "virginica", 1, 0) )
@@ -34,41 +35,42 @@
 #' 
 #' rf.mdl <- randomForest(xdata, y, ntree=501) 
 #'   ua <- rf.class.sensitivity(rf.mdl, xdata=xdata, nperm=20, ntree=501, plot=TRUE)
-#'               
+#'       
+#' @export        
 rf.class.sensitivity <- function(x, xdata, d="1", p=0.05, nperm=999, 
-                            plot=TRUE, seed=NULL, ...) {
+                                 plot=TRUE, seed=NULL, ...) {
   if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
-    if (!x$type == "classification") stop( "x is not a classification object")
-	  if(!is.null(seed)) { set.seed(seed) } else { set.seed(.Random.seed[1]) }
-        rmse <- function(o,p) sqrt( mean( (o - p )^2 ) )	
-	      values <- as.character(unique(x$y))
-	        pred <- predict(x, xdata, type="prob")
-	          nc <- which(colnames(pred) == d)
-	            mpred <- data.frame(obs=pred[,nc])
-	    		  names(mpred) <- "obs" 
+  if (!x$type == "classification") stop( "x is not a classification object")
+  if(!is.null(seed)) { set.seed(seed) } else { set.seed(.Random.seed[1]) }
+    rmse <- function(o,p) sqrt( mean( (o - p )^2 ) )	
+	values <- as.character(unique(x$y))
+	pred <- stats::predict(x, xdata, type="prob")
+	nc <- which(colnames(pred) == d)
+	mpred <- data.frame(obs=pred[,nc])
+	names(mpred) <- "obs" 
 	if(plot == TRUE) 
-	  plot(density(mpred[,1]), main="Perturbed model probabilities", type="n")
+	  graphics::plot(stats::density(mpred[,1]), main="Perturbed model probabilities", type="n")
 	    for(i in 1:nperm) {
 	      y <- x$y
             samp <- sample(which( y %in% d ), length(which( y %in% d )) * p)
-	          y[samp] <- values[values != d] 
-	    	      pmdl <- randomForest(xdata, y)     
-	    	    mpred <- data.frame(mpred, predict(pmdl, xdata, type="prob")[,nc])			  
-	    	if(plot == TRUE) {
-			  pden <- density(mpred[,i+1])
-			    lines(pden$x, pden$y, col="grey")
-			}
+	        y[samp] <- values[values != d] 
+	    	pmdl <- randomForest::randomForest(xdata, y)     
+	    	mpred <- data.frame(mpred, stats::predict(pmdl, xdata, type="prob")[,nc])			  
+	    	  if(plot == TRUE) {
+			    pden <- stats::density(mpred[,i+1])
+			    graphics::lines(pden$x, pden$y, col="grey")
+			  }
 	    }
 	      if(plot == TRUE) {
-            d <- density(mpred[,1])
-	          lines(d$x, d$y, col="red", lwd=2)
-	        legend("topleft", legend=c("observed", "perturbed"), 
-	               col=c("red", "grey"), lwd=c(2,1), bg="white")
+            d <- stats::density(mpred[,1])
+	        graphics::lines(d$x, d$y, col="red", lwd=2)
+	        graphics::legend("topleft", legend=c("observed", "perturbed"), 
+	                         col=c("red", "grey"), lwd=c(2,1), bg="white")
           }		
             names(mpred)[2:ncol(mpred)] <- paste0("sim", seq(1:(ncol(mpred)-1))) 
     	    error <- vector()
         for(i in 2:ncol(mpred)) error <- append(error, rmse(mpred[,1],mpred[,i]))
       cat("Mean error: ", mean(error), "\n")	
-    cat("Standard deviation of error: ", sd(error), "\n")	 
-  list(mean.error=mean(error), sd.error=sd(error), rmse=error, probs=mpred)
+    cat("Standard deviation of error: ", stats::sd(error), "\n")	 
+  list(mean.error = mean(error), sd.error = stats::sd(error), rmse = error, probs = mpred)
   }

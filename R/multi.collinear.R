@@ -28,12 +28,14 @@
 #'
 #'  # Remove identified variable(s)
 #'  test <- test[,-which(names(test)==cl)]
+#'
+#' @export
 multi.collinear <- function(x, p=1e-07) {
- if (!inherits(x, "data.frame")) stop("X MUST BE A data.frame")
-   if ( (dim(x)[2] < 2) == TRUE) stop("NOT ENOUGH VARIABLES TO TEST")
-     xtest <- x
-     x.names <- names(xtest)
-  qrx <- qr(xtest, tol=p)
+  if (!inherits(x, "data.frame")) stop("X MUST BE A data.frame")
+  if ( (dim(x)[2] < 2) == TRUE) stop("NOT ENOUGH VARIABLES TO TEST")
+    xtest <- x
+    x.names <- names(xtest)
+    qrx <- qr(xtest, tol=p)
     if (length(names(xtest)[qrx$pivot[1:qrx$rank]]) != length(xtest) )  
       {  
         keep <- names(xtest)[qrx$pivot[1:qrx$rank]]

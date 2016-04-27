@@ -34,8 +34,10 @@
 #'         for(i in names(iris)[1:4]) {     
 #'           rf.partial.prob(iris.rf, iris, i, "setosa", smooth=TRUE, raw=TRUE, rug=FALSE)
 #'          }
+#'
+#' @export
 rf.partial.prob <- function(x, pred.data, xname, which.class, w, prob=TRUE, plot=TRUE,
-                           smooth=FALSE, raw=FALSE, rug=FALSE, n.pt, xlab, ylab, main, ...) {  
+                            smooth=FALSE, raw=FALSE, rug=FALSE, n.pt, xlab, ylab, main, ...) {  
     if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
 	if (is.null(x$forest)) stop("Object does not contain an ensemble \n")
 	if(!x$type != "regression")	stop("Regression not supported \n")	   
@@ -45,7 +47,7 @@ rf.partial.prob <- function(x, pred.data, xname, which.class, w, prob=TRUE, plot
     if (missing(pred.data)) stop("New data missing \n")
 	
 	focus <- charmatch(which.class, colnames(x$votes))
-      if (is.na(focus)) stop(which.class, "is not one of the class labels")
+    if (is.na(focus)) stop(which.class, "is not one of the class labels")
     xv <- pred.data[, xname]
 	n <- nrow(pred.data)
 	  if(missing(n.pt)) n.pt <- min(length(unique(pred.data[, xname])), 51)  
@@ -58,7 +60,7 @@ rf.partial.prob <- function(x, pred.data, xname, which.class, w, prob=TRUE, plot
         for (i in seq(along = x.pt)) {
           x.data <- pred.data
           x.data[, xname] <- factor(rep(x.pt[i], n), levels = x.pt)
-          pr <- predict(x, x.data, type = "prob")
+          pr <- stats::predict(x, x.data, type = "prob")
           y.pt[i] <- stats::weighted.mean(log(ifelse(pr[, focus] > 0, pr[, focus], .Machine$double.eps)) -
                        rowMeans(log(ifelse(pr > 0, pr, .Machine$double.eps))), w, na.rm=TRUE)
       }  
@@ -90,15 +92,15 @@ rf.partial.prob <- function(x, pred.data, xname, which.class, w, prob=TRUE, plot
 	      if(missing(ylab)) ylab="probability"
 	        if(missing(main)) main=paste("Partial Dependency Plot for Class", which.class, sep=" - ") 			  
     if(smooth)  
-      graphics::plot(x.pt, smooth.spline(x.pt, y.pt)$y, type = "l", xlab=xlab, 
+      graphics::plot(x.pt, stats::smooth.spline(x.pt, y.pt)$y, type = "l", xlab=xlab, 
 		             ylab=ylab, main=main, ...)
-	if(raw == TRUE) lines( y=y.pt, x=x.pt, col="grey", lty=3) 
+	if(raw == TRUE) graphics::lines( y=y.pt, x=x.pt, col="grey", lty=3) 
 	  } else {
       graphics::plot(x.pt, y.pt, type = "l", xlab=xlab, ylab=ylab, main=main, ...)		
       }	
     if (rug) {
       if (n.pt > 10) {
-        graphics::rug(quantile(xv, seq(0.1, 0.9, by=0.1)), side = 1)
+        graphics::rug(stats::quantile(xv, seq(0.1, 0.9, by=0.1)), side = 1)
           } else {
         graphics::rug(unique(xv, side = 1))
         }
