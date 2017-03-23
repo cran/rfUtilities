@@ -50,12 +50,11 @@ rf.mdl <- randomForest(xdata, y, ntree=501)
   ua <- rf.class.sensitivity(rf.mdl, xdata=xdata, nperm=20, ntree=501, plot=TRUE)
       
 }
-\author{
-Jeffrey S. Evans  <jeffrey_evans@tnc.org>
-}
 \references{
 Evans J.S., M.A. Murphy, Z.A. Holden, S.A. Cushman (2011). Modeling species distribution and change using Random Forests CH.8 in Predictive Modeling in Landscape Ecology eds Drew, CA, Huettmann F, Wiersma Y. Springer
 
 Gardner, R.H., R.V. O'Neill, M.G. Turner, and V.H. Dale (1989). Quantifying scale-dependent effects of animal movements with simple percolation models. Landscape Ecology 3:217-227.
 }
-
+\author{
+Jeffrey S. Evans  <jeffrey_evans@tnc.org>
+}

@@ -68,9 +68,6 @@ require(randomForest)
      plot(rf.cv, type = "model", stat = "oob", main = "Model oob error")	  
   
 }
-\author{
-Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
-}
 \references{
 Evans, J.S. and S.A. Cushman (2009) Gradient Modeling of Conifer Species Using Random Forest. Landscape Ecology 5:673-683.
 
@@ -78,4 +75,6 @@ Murphy M.A., J.S. Evans, and A.S. Storfer (2010) Quantify Bufo boreas connectivi
 
 Evans J.S., M.A. Murphy, Z.A. Holden, S.A. Cushman (2011). Modeling species distribution and change using Random Forests CH.8 in Predictive Modeling in Landscape Ecology eds Drew, CA, Huettmann F, Wiersma Y. Springer
 }
-
+\author{
+Jeffrey S. Evans <jeffrey_evans<at>tnc.org>
+}

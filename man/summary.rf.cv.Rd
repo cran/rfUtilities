@@ -14,4 +14,3 @@
 \description{
 Summarizing of the rf.crossValidation function
 }
-

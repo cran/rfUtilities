@@ -12,4 +12,3 @@ rfu.news(...)
 \description{
 Displays release notes
 }
-

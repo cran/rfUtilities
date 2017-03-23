@@ -1,18 +1,17 @@
 #' @title Random Forest Class Balance (Zero Inflation Correction) Model
 #' @description Implements Evans & Cushman (2008) Random Forests class-balance (zero inflation) modeling approach. 
 #'                                                                                                                                                                                                    
-#' @param ydata Response variable using index (i.e., [,2] or [,"SPP"] )                        
-#' @param xdata Independent variables using index (i.e., [,3:14] or [3:ncol(data)] )
-#' @param p p-value of covariance convergence (do not recommend changing)
-#' @param cbf        Scaling factor to test if problem is imbalanced, default is size of majority class * 3
-#' @param sf         Majority subsampling factor. If sf=1 then random sample would be perfectly balanced with smallest class [s|0=n|1] whereas; sf=2 provides [s|0=(n|1*2)]
-#' @param ...        Additional arguments passed to randomForest
+#' @param ydata              Response variable using index (i.e., [,2] or [,"SPP"] )                        
+#' @param xdata              Independent variables using index (i.e., [,3:14] or [3:ncol(data)] )
+#' @param p                  p-value of covariance convergence (do not recommend changing)
+#' @param cbf                Scaling factor to test if problem is imbalanced, default is size of majority class * 3
+#' @param sf                 Majority subsampling factor. If sf=1 then random sample would be perfectly balanced with smallest class [s|0=n|1] whereas; sf=2 provides [s|0=(n|1*2)]
+#' @param ...                Additional arguments passed to randomForest
 #'  
-#' @return A list class object with the following components:
-#'  @return   model Final Combined Random Forests ensemble
-#'  @return   oob.error Median out-of-bag error
-#'  @return   confusion Confusion matrix (summed across models)
-#'  @return   pcc Percent correctly classified
+#' @return A rf.balanced object with the following components:
+#'  @return   model          Final Combined Random Forests ensemble (randomForest object)
+#'  @return   OOB.error      Out-of-bag error for each model (vector)
+#'  @return   confusion      Confusion matrix for each model (list)
 #'
 #' @note
 #' This approach runs independent Random Forest models using random subsets of the majority class until covariance convergences on full data. The final model is obtained by combining independent ensembles.  
@@ -33,8 +32,20 @@
 #' 	
 #' # Percent of "virginica" observations
 #' length( iris$Species[iris$Species == "virginica"] ) / dim(iris)[1]*100
-#' 	
-#' rf.classBalance( ydata=iris[,"Species"], xdata=iris[,1:4], cbf=1 )
+#' 
+#' # Balanced model	
+#' ( cb <- rf.classBalance( ydata=iris[,"Species"], xdata=iris[,1:4], cbf=1 ) )
+#'
+#' # Calculate Kappa for each balanced model in ensemble 
+#' for(i in 1:length(cb$confusion) ) { 
+#'   print( accuracy(cb$confusion[[i]][,1:2])[5] ) 
+#' }
+#'
+#' # Evaluate cumulative and mean confusion matrix
+#' accuracy( round((cb$confusion[[1]] + cb$confusion[[2]] + cb$confusion[[3]]))[,1:2] )
+#' accuracy( round((cb$confusion[[1]] + cb$confusion[[2]] + cb$confusion[[3]])/3)[,1:2])
+#'
+#' @seealso \code{\link[randomForest]{randomForest}} for randomForest ... model options
 #'
 #' @export
 rf.classBalance <- function (ydata, xdata, p=0.005, cbf=3, sf=2, ...) 
@@ -81,7 +92,10 @@ rf.classBalance <- function (ydata, xdata, p=0.005, cbf=3, sf=2, ...)
         names(test) <- names(majority) 
       if ( !is.na(match("rf.model",ls()))) rm(rf.model)
         n <- dim(minority)[1] * sf                 
-    i=0; converge = c("FALSE")  
+    i=0; converge = c("FALSE")
+    confusion <- list()
+    validation <- list()
+	OOB <- vector()
       while (converge != "TRUE" )
        {
        i=i+1
@@ -92,19 +106,18 @@ rf.classBalance <- function (ydata, xdata, p=0.005, cbf=3, sf=2, ...)
           if ( !is.na(match("rf.model",ls()))) {               
             rf.fit <- randomForest::randomForest(x=mdata[,2:ncol(mdata)], y=mdata[,1], ...)                           
             rf.model <- randomForest::combine(rf.fit, rf.model)           
-            OOB <- ( OOB + stats::median(rf.fit$err.rate[,1]) ) 
-            CM <- (CM + rf.fit$confusion)                 
+            OOB[i] <- stats::median(rf.fit$err.rate[,1])  
+            confusion[[i]] <- rf.fit$confusion	
           } else {
             rf.model <- randomForest::randomForest(x=mdata[,2:ncol(mdata)], y=mdata[,1], ...)  
-            OOB <- stats::median(rf.model$err.rate[,1]) 
-            CM <- rf.model$confusion                                    
+            OOB[i] <- stats::median(rf.model$err.rate[,1])  
+            confusion[[i]] <- rf.model$confusion	                               
           }
         test <- rbind(test, class.sample)    
         test.cov <- stats::cov( test[,names(x)] )
         converge <- CompCov(all.cov, test.cov)  
     }
-        OOB <- OOB / i
-      CM[,3] <- CM[,3] / i
-    PCC <- (sum(diag(CM))/sum(CM[1:dim(CM)[1],1:dim(CM)[1]])) * 100
-  list( model=rf.model, OOB.error=OOB, confusion=CM, pcc=PCC )
+      bal.mdl <- list( model=rf.model, OOB.error=OOB, confusion=confusion )
+    class( bal.mdl ) <- c("rf.balanced", "list")	
+  return( bal.mdl )  
 }

@@ -79,12 +79,11 @@ require(randomForest)
 }
 
 }
-\author{
-Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
-}
 \references{
 Murphy M.A., J.S. Evans, and A.S. Storfer (2010) Quantify Bufo boreas connectivity in Yellowstone National Park with landscape genetics. Ecology 91:252-261
 
 Evans J.S., M.A. Murphy, Z.A. Holden, S.A. Cushman (2011). Modeling species distribution and change using Random Forests CH.8 in Predictive Modeling in Landscape Ecology eds Drew, CA, Huettmann F, Wiersma Y. Springer
 }
-
+\author{
+Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
+}

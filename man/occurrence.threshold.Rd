@@ -53,12 +53,11 @@ par(mfrow=c(2,2))
   plot(kappa.ss.t)   
   
 }
-\author{
-Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
-}
 \references{
 Jimenez-Valverde, A., & J.M. Lobo (2007). Threshold criteria for conversion of probability of species presence to either-or presence-absence. Acta Oecologica 31(3):361-369
 
 Liu, C., P.M. Berry, T.P. Dawson, R.G. Pearson (2005). Selecting thresholds of occurrence in the prediction of species distributions. Ecography 28:385-393.
 }
-
+\author{
+Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
+}

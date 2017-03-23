@@ -42,4 +42,10 @@ rfUtilities_2.0-0
     summary and plot generics.
 	
 * Added users accuracy, producers accuracy and kappa to rf.crossValidation output.
+
+rfUtilities_2.0-1
+=================
+* Bug fix - Thanks to Patrick Fekety for pointing out that the seed argument in rf.modelSel was not being honoured,
+              This fix will stabilize stochasticity in the model selection.
+
  

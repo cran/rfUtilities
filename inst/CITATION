@@ -6,9 +6,9 @@ citHeader("To cite rfUtilities package in publications please use:")
 	    person(c("Jeffrey", "S."), "Evans", role = c("aut", "cre")),
  	    person(c("Melanie", "A."), "Murphy", role = c("aut"))
      ),
-     year = "2016",
-     note = "R package version 2.0-0",
-     url = "http://CRAN.R-project.org/package=rfUtilities",
+     year = "2017",
+     note = "R package version 2.0-1",
+	 url = "https://cran.r-project.org/package=rfUtilities",
      key = "rfUtilities-package"
    )
 

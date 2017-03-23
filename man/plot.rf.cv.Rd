@@ -21,4 +21,3 @@ Plot function for rf.cv object
 \author{
 Jeffrey S. Evans  <jeffrey_evans@tnc.org>
 }
-

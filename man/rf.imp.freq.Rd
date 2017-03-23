@@ -41,4 +41,3 @@ Evaluates the number of times a variable is selected greater-than/equal-to defin
 \author{
 Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
 }
-

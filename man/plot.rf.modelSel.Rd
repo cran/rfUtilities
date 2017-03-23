@@ -19,4 +19,3 @@ Dot plot function for rf.modelSel importance vlaues
 \author{
 Jeffrey S. Evans  <jeffrey_evans@tnc.org>
 }
-

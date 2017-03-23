@@ -17,4 +17,3 @@ Plot function for occurrence.threshold object
 \author{
 Jeffrey S. Evans  <jeffrey_evans@tnc.org>
 }
-

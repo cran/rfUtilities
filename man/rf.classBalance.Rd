@@ -20,11 +20,10 @@ rf.classBalance(ydata, xdata, p = 0.005, cbf = 3, sf = 2, ...)
 \item{...}{Additional arguments passed to randomForest}
 }
 \value{
-A list class object with the following components:
- @return   model Final Combined Random Forests ensemble
- @return   oob.error Median out-of-bag error
- @return   confusion Confusion matrix (summed across models)
- @return   pcc Percent correctly classified
+A rf.balanced object with the following components:
+ @return   model          Final Combined Random Forests ensemble (randomForest object)
+ @return   OOB.error      Out-of-bag error for each model (vector)
+ @return   confusion      Confusion matrix for each model (list)
 }
 \description{
 Implements Evans & Cushman (2008) Random Forests class-balance (zero inflation) modeling approach.
@@ -41,16 +40,28 @@ data(iris)
 	
 # Percent of "virginica" observations
 length( iris$Species[iris$Species == "virginica"] ) / dim(iris)[1]*100
-	
-rf.classBalance( ydata=iris[,"Species"], xdata=iris[,1:4], cbf=1 )
 
+# Balanced model	
+( cb <- rf.classBalance( ydata=iris[,"Species"], xdata=iris[,1:4], cbf=1 ) )
+
+# Calculate Kappa for each balanced model in ensemble 
+for(i in 1:length(cb$confusion) ) { 
+  print( accuracy(cb$confusion[[i]][,1:2])[5] ) 
 }
-\author{
-Jeffrey S. Evans   <jeffrey_evans<at>tnc.org>
+
+# Evaluate cumulative and mean confusion matrix
+accuracy( round((cb$confusion[[1]] + cb$confusion[[2]] + cb$confusion[[3]]))[,1:2] )
+accuracy( round((cb$confusion[[1]] + cb$confusion[[2]] + cb$confusion[[3]])/3)[,1:2])
+
 }
 \references{
 Evans, J.S. and S.A. Cushman (2009) Gradient Modeling of Conifer Species Using Random Forest. Landscape Ecology 5:673-683.
 
 Evans J.S., M.A. Murphy, Z.A. Holden, S.A. Cushman (2011). Modeling species distribution and change using Random Forests CH.8 in Predictive Modeling in Landscape Ecology eds Drew, CA, Huettmann F, Wiersma Y. Springer
 }
-
+\seealso{
+\code{\link[randomForest]{randomForest}} for randomForest ... model options
+}
+\author{
+Jeffrey S. Evans   <jeffrey_evans<at>tnc.org>
+}

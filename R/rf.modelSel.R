@@ -67,17 +67,17 @@
 #' 
 #' ( rf.fit <- randomForest(x=airquality[,vars], y=airquality[,1]) )
 #'
-#' @seealso \code{\link[randomForest]{randomForest}} for randomForest model options
+#' @seealso \code{\link[randomForest]{randomForest}} for randomForest ... model options
 #'
 #' @exportClass rf.modelSel
 #' @export
 rf.modelSel <- function(xdata, ydata, imp.scale="mir", r=c(0.25, 0.50, 0.75),  
                         final.model=FALSE, seed=NULL, parsimony=NULL, ...) 
   {
+ if(!is.null(seed)) { set.seed(seed) } # else { set.seed(.Random.seed[1]) }
  rf.ImpScale <- function (x, scale="mir") { 
   if (!inherits(x, "randomForest")) 
-    stop(deparse(substitute(x)), " Must be a randomForest object")
-  if(!is.null(seed)) { set.seed(seed) } else { set.seed(.Random.seed[1]) }
+    stop(deparse(substitute(x)), " Must be a randomForest object")  
   if (x$type == "regression") {
   if (is.null(x$importanceSD) == TRUE | "%IncMSE" %in% names(as.data.frame(x$importance)) == FALSE)
     stop("randomForest object does not contain importance, please run with importance=TRUE")  

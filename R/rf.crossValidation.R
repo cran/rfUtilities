@@ -34,7 +34,7 @@
 #' \item   k = (observed accuracy - chance agreement) / (1 - chance agreement) where; change agreement = sum[product of row and column totals for each class] 
 #'  }
 #'
-#' @author Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
+#' @author Jeffrey S. Evans <jeffrey_evans<at>tnc.org>
 #'
 #' @references
 #' Evans, J.S. and S.A. Cushman (2009) Gradient Modeling of Conifer Species Using Random Forest. Landscape Ecology 5:673-683.

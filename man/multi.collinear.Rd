@@ -4,7 +4,7 @@
 \alias{multi.collinear}
 \title{Multi-collinearity test}
 \usage{
-multi.collinear(x, p = 0.0000001)
+multi.collinear(x, p = 1e-07)
 }
 \arguments{
 \item{x}{data.frame or matrix object}
@@ -36,12 +36,11 @@ pca.test <- prcomp(test[,1:ncol(test)], scale=TRUE)
  test <- test[,-which(names(test)==cl)]
 
 }
-\author{
-Jeffrey S. Evans  <jeffrey_evans<at>tnc.org>
-}
 \references{
 Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) The New S Language. Wadsworth & Brooks/Cole.
 
 Dongarra, J. J., Bunch, J. R., Moler, C. B. and Stewart, G. W. (1978) LINPACK Users Guide. Philadelphia: SIAM Publications.
 }
-
+\author{
+Jeffrey S. Evans  <jeffrey_evans<at>tnc.org>
+}

@@ -14,4 +14,3 @@
 \description{
 Summarizing of a rf.significance object
 }
-

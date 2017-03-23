@@ -70,12 +70,11 @@ accuracy(cbind(c(15,11), c(2,123)))
  accuracy(iris[sample(1:150),]$Species, iris$Species)
 
 }
-\author{
-Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
-}
 \references{
 Cohen, J. (1960) A coefficient of agreement for nominal scales. Educational and Psychological Measurement 20 (1):37-46
 Cohen, J. (1968) Weighted kappa: Nominal scale agreement with provision for scaled disagreement or partial credit. Psychological Bulletin 70 (4):213-220  
 Powers, D.M.W., (2011). Evaluation: From Precision, Recall and F-Measure to ROC, Informedness, Markedness & Correlation. Journal of Machine Learning Technologies 2(1):37-63.
 }
-
+\author{
+Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
+}
