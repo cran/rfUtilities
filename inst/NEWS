@@ -48,4 +48,13 @@ rfUtilities_2.0-1
 * Bug fix - Thanks to Patrick Fekety for pointing out that the seed argument in rf.modelSel was not being honoured,
               This fix will stabilize stochasticity in the model selection.
 
- 
+rfUtilities_2.1-0
+=================
+
+* The rf.crossValidation now supports regression 
+
+* Major changes to the multi.collinear function. Now performs column order and leave-one-out permutation test.
+
+* Print and plot generics support change in rf.crossValidation
+
+* rf.modelSel print generic now returns additional test statistics (test threshold, OOB, class error and number of parameters) and associated, sorted parameters 

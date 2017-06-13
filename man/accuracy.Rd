@@ -7,9 +7,9 @@
 accuracy(x, y)
 }
 \arguments{
-\item{x}{vector of predicted data or table/matrix contengency table}
+\item{x}{vector of predicted data or table/matrix contingency table}
 
-\item{y}{vector of observed data, if x is not table/matrix contengency table}
+\item{y}{vector of observed data, if x is not table/matrix contingency table}
 }
 \value{
 A list class object with the following components:

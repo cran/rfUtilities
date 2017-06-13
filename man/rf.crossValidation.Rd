@@ -2,7 +2,7 @@
 % Please edit documentation in R/rf.crossValidation.R
 \name{rf.crossValidation}
 \alias{rf.crossValidation}
-\title{Random Forest Classification Model Cross-validation}
+\title{Random Forest Classification or Regression Model Cross-validation}
 \usage{
 rf.crossValidation(x, xdata, p = 0.1, n = 99, seed = NULL, ...)
 }
@@ -20,7 +20,7 @@ rf.crossValidation(x, xdata, p = 0.1, n = 99, seed = NULL, ...)
 \item{...}{Additional arguments passed to Random Forests}
 }
 \value{
-A "rf.cv" class object with the following components:
+For classification a "rf.cv"", "classification" class object with the following components:
 \itemize{ 
 \item  cross.validation$cv.users.accuracy        Class-level users accuracy for the subset cross validation data   
 \item  cross.validation$cv.producers.accuracy    Class-level producers accuracy for the subset cross validation data    
@@ -29,28 +29,37 @@ A "rf.cv" class object with the following components:
 \item  model$model.producers.accuracy            Class-level producers accuracy for the model 
 \item  model$model.oob                           Global and class-level OOB error for the model  
  }
-}
-\description{
-Implements a permutation test cross-validation for Random Forests classification models
-}
-\details{
-The crossvalidation statistics are based on the prediction error on the witheld data: 
 
-Total observed accuracy represents the percent correctly classified (AKA, ) and is considered as a naive measure of agreement. The diagonal of the confusion matrix represents correctly classified observations where off-diagonals represent cross-classification error. The primary issue with this evaluation is that does not reveal if error was evenly distributed between classes.   
-
-To represent the balance of error one can use omission and commission statistics such as estimates of users and producers accuracy. User's accuracy corresponds to error of commission (inclusion), observations being erroneously included in a given class. The commission errors are represented by row sums of the matrix. Producer's accuracy corresponds to error of omission (exclusion), observations being erroneously excluded from a given class. The omission errors are represented by column sums of the matrix.
-
-None of the previous statistics account for random agreement influencing the accuracy measure. The kappa statistic is a chance corrected metric that reflects the difference between observed agreement and agreement expected by random chance. A kappa of k=0.85 would indicate that there is 85% better agreement than by chance alone.  
-
+For regression a "rf.cv", "regression" class object with the following components:
 \itemize{ 
-\item   pcc = [Number of correct observations / total number of observations] 
-\item   pcc = [Number of correct observations / total number of observations] 
-\item   producers accuracy =  [Number of correct / total number of correct and omission errors] 
-\item   k = (observed accuracy - chance agreement) / (1 - chance agreement) where; change agreement = sum[product of row and column totals for each class] 
+\item  fit.var.exp    Percent variance explained from specified fit model 
+\item  fit.mse        Mean Squared Error from specified fit model   
+\item  y.rmse         Root Mean Squared Error (observed vs. predicted) from each Bootstrap iteration (cross-validation)    
+\item  model.mse      Mean Squared Error from each Bootstrapped model
+\item  model.varExp   Percent variance explained from each Bootstrapped model   
  }
 }
+\description{
+Implements a permutation test cross-validation for Random Forests models
+}
+\details{
+For classification problems, the cross-validation statistics are based on the prediction error on the withheld data: 
+Total observed accuracy represents the percent correctly classified (aka, PCC) and is considered as a naive measure of agreement. The diagonal of the confusion matrix represents correctly classified observations where off-diagonals represent cross-classification error. The primary issue with this evaluation is that does not reveal if error was evenly distributed between classes.   
+To represent the balance of error one can use omission and commission statistics such as estimates of users and producers accuracy. User's accuracy corresponds to error of commission (inclusion), observations being erroneously included in a given class. The commission errors are represented by row sums of the matrix. Producer's accuracy corresponds to error of omission (exclusion), observations being erroneously excluded from a given class. The omission errors are represented by column sums of the matrix.
+None of the previous statistics account for random agreement influencing the accuracy measure. The kappa statistic is a chance corrected metric that reflects the difference between observed agreement and agreement expected by random chance. A kappa of k=0.85 would indicate that there is 85% better agreement than by chance alone.  
+  \itemize{ 
+  \item   pcc = [Number of correct observations / total number of observations] 
+  \item   pcc = [Number of correct observations / total number of observations] 
+  \item   producers accuracy =  [Number of correct / total number of correct and omission errors] 
+  \item   k = (observed accuracy - chance agreement) / (1 - chance agreement) where; change agreement = sum[product of row and column totals for each class] 
+   }
+For regression problems, a Bootstrap is constructed and the subset models MSE and percent variance explained is reported. Additional, the RMSE between the withheld response variable (y) and the predicted subset model
+}
 \examples{
+\dontrun{
 require(randomForest)
+
+# For classification
   data(iris)
     iris$Species <- as.factor(iris$Species)    	
       set.seed(1234)	
@@ -66,13 +75,22 @@ require(randomForest)
    par(mfrow=c(1,2)) 
      plot(rf.cv, type = "cv", stat = "oob", main = "CV oob error")
      plot(rf.cv, type = "model", stat = "oob", main = "Model oob error")	  
+
+# For regression
+data(airquality)
+airquality <- na.omit(airquality) 
+rf.mdl <- randomForest(y=airquality[,"Ozone"], x=airquality[,2:4])
+( rf.cv <- rf.crossValidation(rf.mdl, airquality[,2:4], p=0.10, n=99, ntree=501) )
+ par(mfrow=c(2,2))
+   plot(rf.cv)  
+   plot(rf.cv, stat = "mse")
+   plot(rf.cv, stat = "var.exp")
+}	 
   
 }
 \references{
 Evans, J.S. and S.A. Cushman (2009) Gradient Modeling of Conifer Species Using Random Forest. Landscape Ecology 5:673-683.
-
 Murphy M.A., J.S. Evans, and A.S. Storfer (2010) Quantify Bufo boreas connectivity in Yellowstone National Park with landscape genetics. Ecology 91:252-261
-
 Evans J.S., M.A. Murphy, Z.A. Holden, S.A. Cushman (2011). Modeling species distribution and change using Random Forests CH.8 in Predictive Modeling in Landscape Ecology eds Drew, CA, Huettmann F, Wiersma Y. Springer
 }
 \author{

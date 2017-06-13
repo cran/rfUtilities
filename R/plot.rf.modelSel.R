@@ -1,5 +1,5 @@
 #' @title Plot random forests model selection
-#' @description Dot plot function for rf.modelSel importance vlaues 
+#' @description Dot plot function for rf.modelSel importance values 
 #'
 #' @param  x      A rf.modelSel object
 #' @param  imp    Plot selected ("sel") or all ("all") importance used in model selection

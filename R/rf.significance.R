@@ -75,7 +75,6 @@ rf.significance <- function(x, xdata, q=0.99, p=0.05, nperm=999, ...)
 	 }	
       return( error / nperm )
     } 	
-  
   if (x$type == "classification") {  
 	test.oob <- stats::median(x$err.rate[,1])
 	test.max <- stats::median(max(x$err.rate[,-1]))
@@ -94,7 +93,6 @@ rf.significance <- function(x, xdata, q=0.99, p=0.05, nperm=999, ...)
       class(sig) <- c("significance","list")			   
 	return( sig )				
     }
-	
    if (x$type == "regression") {			 
     if (is.factor(x$y)) stop("y cannot be a factor") 
 	  test.rsq <- stats::median(x$rsq)

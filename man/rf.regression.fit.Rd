@@ -13,7 +13,7 @@ rf.regression.fit(x)
 A list and rf.fit class object with "fit" matrix of fit statistics and "message" indicating overfit risk.
 }
 \description{
-Evaluatues fit and overfit of random forests regression
+Evaluates fit and overfit of random forests regression
 }
 \examples{
   library(randomForest)

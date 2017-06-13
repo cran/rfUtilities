@@ -4,42 +4,49 @@
 \alias{multi.collinear}
 \title{Multi-collinearity test}
 \usage{
-multi.collinear(x, p = 1e-07)
+multi.collinear(x, perm = FALSE, leave.out = FALSE, n = 99,
+  p = 0.0000001)
 }
 \arguments{
 \item{x}{data.frame or matrix object}
 
+\item{perm}{(FALSE/TRUE) Should a permitation be applied}
+
+\item{leave.out}{(FALSE/TRUE) Should a variable be left out at each permitation}
+
+\item{n}{Number of permutations}
+
 \item{p}{multi-collinearity threshold}
 }
 \value{
-test statistic message
-
-names character vector of multi-collinearity variables
+If perm == TRUE a data.frame of indicating the frequency that a variable was collinear and, if leave.out = TRUE the number of times it was omitted. Otherwise, a vector of collinear variables is returned. If no colinear variables are identified a NULL is returned.
 }
 \description{
 Test for multi-collinearity in data using qr-matrix decomposition
 }
 \note{
+A permitation approach is not available where, at each iteration, the columns are randomly rearranged and a parameter dropped. The frequency that a variable is identified as collinear is accumulated. 
 The multi-collinearity threshold needs to be adjusted based on number of parameters. For small number(s) of variables (<20) use ~1e-07 and for larger ~0.05
 }
 \examples{
  
 test <- data.frame(v1=seq(0.1, 5, length=100), v2=seq(0.1, 5, length=100), 
-                   v3=dnorm(runif(100)), v4=dnorm(runif(100))) 
+                   v3=dnorm(runif(100)), v4=dnorm(runif(100)))
+					
+# Single test					
   ( cl <- multi.collinear(test) )
 
-# PCA biplot of variables
-pca.test <- prcomp(test[,1:ncol(test)], scale=TRUE)
-  biplot(pca.test, arrow.len=0.1, xlabs=rep(".", length(pca.test$x[,1])))        
-
+# Permutated test with leave out	
+( cl.test <- multi.collinear(test, perm = TRUE, leave.out = TRUE, n = 999) )
+    cl.test[cl.test$frequency > 0,]$variables
+			       
  # Remove identified variable(s)
- test <- test[,-which(names(test)==cl)]
+ head( test[,-which(names(test) \%in\% cl.test[cl.test$frequency > 0,]$variables)] )
 
 }
 \references{
-Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) The New S Language. Wadsworth & Brooks/Cole.
-
-Dongarra, J. J., Bunch, J. R., Moler, C. B. and Stewart, G. W. (1978) LINPACK Users Guide. Philadelphia: SIAM Publications.
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) The New S Language. Wadsworth & Brooks/Cole. 
+ Dongarra, J. J., Bunch, J. R., Moler, C. B. and Stewart, G. W. (1978) LINPACK Users Guide. Philadelphia: SIAM Publications.
 }
 \author{
 Jeffrey S. Evans  <jeffrey_evans<at>tnc.org>

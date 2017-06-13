@@ -3,16 +3,16 @@
 #'
 #' @param  x        A rf.cv object
 #' @param  type     Which result to evaluate c("cv","model")
-#' @param  stat     Which statistic to plot c("users.accuracy", "producers.accuracy", "kappa", "oob")  
+#' @param  stat     Which statistic to plot: classification: "users.accuracy", "producers.accuracy", "kappa", "oob", regression: "rmse", "mse", "var.exp"  
 #' @param  ...      Additional arguments passed to plot
 #'
 #' @author Jeffrey S. Evans  <jeffrey_evans@@tnc.org>
 #'
-#'                    
 #' @method plot rf.cv 
 #'
 #' @export    	     
 plot.rf.cv <- function(x, type = "cv", stat = "producers.accuracy", ...) {
+  if(class(x)[2] == "classification") {
   plot.class <- function(x, ...) {
     dots <- as.list(match.call(expand.dots = TRUE)[-1])
     dots[["x"]] <- 1:nrow(x)
@@ -57,7 +57,6 @@ plot.rf.cv <- function(x, type = "cv", stat = "producers.accuracy", ...) {
       graphics::legend("bottomright", legend = colnames(x)[1:(ncol(x)-1)],  
   	                   col=1:nrow(x), lty = rep(1,ncol(x)-1), bg="white")   		
   }
-  
     if(type == "cv" & stat == "users.accuracy") 
       { dat <- x$cross.validation$cv.users.accuracy 
     } else if(type == "cv" & stat == "producers.accuracy")
@@ -78,4 +77,33 @@ plot.rf.cv <- function(x, type = "cv", stat = "producers.accuracy", ...) {
     } else if( stat == "kappa") {
       plot.kappa(dat, ...)
     }
-} # end
+  }
+  if(class(x)[2] == "regression") {
+   if( stat != "rmse" & stat != "mse" & stat != "var.exp") stat = "rmse"   
+    if(stat == "rmse") 
+        { dat <- x[["y.rmse"]]
+		  slab = "CV Root Mean Squared Error (obs vs. pred)"
+      } else if(stat == "mse")
+        {  dat <- x[["model.mse"]]
+           slab = "Model Mean Square Error"
+           fit <- x[["fit.mse"]] 		   
+     }  else if(stat == "var.exp")
+        {  dat <- dat <- x[["model.varExp"]]
+           slab = "Model percent variance explained"
+		   fit <- x[["fit.var.exp"]] 
+		}	
+    plot.reg <- function(x, s = stat, ...) {
+      dots <- as.list(match.call(expand.dots = TRUE)[-1])
+        dots[["x"]] <- stats::smooth.spline(1:length(x), sort(x))$x
+        dots[["y"]] <- stats::smooth.spline(1:length(x), sort(x))$y
+        dots[["type"]] <- "n"
+    	  if (is.null(dots[["xlab"]]) & "xlab" %in% names(dots) == FALSE) dots[["xlab"]] <-  ""
+    	  if (is.null(dots[["ylab"]]) & "ylab" %in% names(dots) == FALSE) dots[["ylab"]] <-  ""
+    	  if (is.null(dots[["main"]]) & "main" %in% names(dots) == FALSE) dots[["main"]] <- slab 
+        do.call("plot", dots)
+      graphics::lines(dots[["x"]], dots[["y"]])
+        if(stat == "mse" | stat == "var.exp") graphics::abline(h=fit, col="blue")
+    }
+    plot.reg(dat, s = stat, ...)
+  } 
+}

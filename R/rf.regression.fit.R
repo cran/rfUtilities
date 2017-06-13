@@ -1,5 +1,5 @@
 #' @title Random Forest fit statistics  
-#' @description Evaluatues fit and overfit of random forests regression 
+#' @description Evaluates fit and overfit of random forests regression 
 #' 
 #' @param x    randomForest regression object
 #' @return     A list and rf.fit class object with "fit" matrix of fit statistics and "message" indicating overfit risk. 

@@ -1,13 +1,13 @@
 #' @title Test occurrence probability thresholds
-#' @description A statistical sensetivity test for occurrence probability thresholds 
+#' @description A statistical sensitivity test for occurrence probability thresholds 
 #'       
-#' @param x             A classification randomForests model object  
+#' @param x             A classification randomForest model object  
 #' @param xdata         Independent data used to build model
 #' @param class         What class to test
 #' @param p             Vector of probability thresholds 
 #' @param type          What statistic to use in evaluation ("delta.ss", "sum.ss", "kappa") 
 #'
-#' @return An "occurrence.threshold" class object contaning a "thresholds" vector object with evaluation statistic and probability thresholds as names.  
+#' @return An "occurrence.threshold" class object containing a "thresholds" vector object with evaluation statistic and probability thresholds as names.  
 #'
 #' @details
 #' Available threshold evaluation statistics:

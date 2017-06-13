@@ -14,7 +14,7 @@
 \item{...}{Additional arguments passed to plot}
 }
 \description{
-Dot plot function for rf.modelSel importance vlaues
+Dot plot function for rf.modelSel importance values
 }
 \author{
 Jeffrey S. Evans  <jeffrey_evans@tnc.org>

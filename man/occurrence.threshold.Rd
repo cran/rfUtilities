@@ -8,7 +8,7 @@ occurrence.threshold(x, xdata, class, p = seq(0.1, 0.7, 0.02),
   type = "delta.ss")
 }
 \arguments{
-\item{x}{A classification randomForests model object}
+\item{x}{A classification randomForest model object}
 
 \item{xdata}{Independent data used to build model}
 
@@ -19,10 +19,10 @@ occurrence.threshold(x, xdata, class, p = seq(0.1, 0.7, 0.02),
 \item{type}{What statistic to use in evaluation ("delta.ss", "sum.ss", "kappa")}
 }
 \value{
-An "occurrence.threshold" class object contaning a "thresholds" vector object with evaluation statistic and probability thresholds as names.
+An "occurrence.threshold" class object containing a "thresholds" vector object with evaluation statistic and probability thresholds as names.
 }
 \description{
-A statistical sensetivity test for occurrence probability thresholds
+A statistical sensitivity test for occurrence probability thresholds
 }
 \details{
 Available threshold evaluation statistics:

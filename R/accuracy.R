@@ -1,8 +1,8 @@
 #' @title Accuracy
 #' @description Classification accuracy measures for pcc, kappa, users accuracy, producers accuracy
 #'    
-#' @param x   vector of predicted data or table/matrix contengency table
-#' @param y   vector of observed data, if x is not table/matrix contengency table 
+#' @param x   vector of predicted data or table/matrix contingency table
+#' @param y   vector of observed data, if x is not table/matrix contingency table 
 #'
 #' @return A list class object with the following components:
 #' \itemize{ 
