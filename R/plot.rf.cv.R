@@ -3,7 +3,7 @@
 #'
 #' @param  x        A rf.cv object
 #' @param  type     Which result to evaluate c("cv","model")
-#' @param  stat     Which statistic to plot: classification: "users.accuracy", "producers.accuracy", "kappa", "oob", regression: "rmse", "mse", "var.exp"  
+#' @param  stat     Which statistic to plot: classification: "users.accuracy", "producers.accuracy", "kappa", "oob", regression: "rmse", "mse", "var.exp", "mae", "mbe"  
 #' @param  ...      Additional arguments passed to plot
 #'
 #' @author Jeffrey S. Evans  <jeffrey_evans@@tnc.org>
@@ -79,10 +79,10 @@ plot.rf.cv <- function(x, type = "cv", stat = "producers.accuracy", ...) {
     }
   }
   if(class(x)[2] == "regression") {
-   if( stat != "rmse" & stat != "mse" & stat != "var.exp") stat = "rmse"   
+   if( stat != "rmse" & stat != "mse" & stat != "var.exp" & stat != "mbe" & stat != "mae") stat = "rmse"   
     if(stat == "rmse") 
         { dat <- x[["y.rmse"]]
-		  slab = "CV Root Mean Squared Error (obs vs. pred)"
+		  slab = "Cross-validated Root Mean Squared Error"
       } else if(stat == "mse")
         {  dat <- x[["model.mse"]]
            slab = "Model Mean Square Error"
@@ -91,7 +91,13 @@ plot.rf.cv <- function(x, type = "cv", stat = "producers.accuracy", ...) {
         {  dat <- dat <- x[["model.varExp"]]
            slab = "Model percent variance explained"
 		   fit <- x[["fit.var.exp"]] 
-		}	
+     }  else if(stat == "mbe")
+        {  dat <- x[["y.mbe"]]
+		   slab = "Cross-validated Mean Bias Error"
+	 }  else if(stat == "mae")
+        {  dat <- x[["y.mae"]]
+		   slab = "Cross-validated Mean Absolute Error"
+		}
     plot.reg <- function(x, s = stat, ...) {
       dots <- as.list(match.call(expand.dots = TRUE)[-1])
         dots[["x"]] <- stats::smooth.spline(1:length(x), sort(x))$x

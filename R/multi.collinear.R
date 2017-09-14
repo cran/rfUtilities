@@ -1,13 +1,15 @@
 #' @title Multi-collinearity test
 #' @description Test for multi-collinearity in data using qr-matrix decomposition
 #'
-#' @param x            data.frame or matrix object
+#' @param x             data.frame or matrix object
 #' @param perm         (FALSE/TRUE) Should a permitation be applied
 #' @param leave.out    (FALSE/TRUE) Should a variable be left out at each permitation
-#' @param n            Number of permutations
-#' @param p            multi-collinearity threshold
+#' @param n             Number of permutations
+#' @param p             multi-collinearity threshold
+#' @param na.rm        (FALSE/TRUE) Remove NA values
 #'
-#' @return If perm == TRUE a data.frame of indicating the frequency that a variable was collinear and, if leave.out = TRUE the number of times it was omitted. Otherwise, a vector of collinear variables is returned. If no colinear variables are identified a NULL is returned. 
+#' @return If perm == TRUE a data.frame of indicating the frequency that a variable was collinear and, if leave.out = TRUE 
+#'         the number of times it was omitted. Otherwise, a vector of collinear variables is returned. If no colinear variables are identified a NULL is returned. 
 #'
 #' @author Jeffrey S. Evans  <jeffrey_evans<at>tnc.org>
 #'
@@ -34,10 +36,11 @@
 #'  head( test[,-which(names(test) %in% cl.test[cl.test$frequency > 0,]$variables)] )
 #'
 #' @export
-multi.collinear <- function(x, perm = FALSE, leave.out = FALSE, n = 99, p=1e-07) {
+multi.collinear <- function(x, perm = FALSE, leave.out = FALSE, n = 99, p = 1e-07, na.rm = FALSE) {
   if (!inherits(x, "data.frame") & !inherits(x, "matrix")) stop("x must be a data.frame or matrix")
     if ( (dim(x)[2] < 2) == TRUE) stop("Need at least two parameters to test")
       if(!inherits(x, "matrix")) x <- as.data.frame(x)
+	    if(na.rm) { x <- stats::na.omit(x) }
     qrd <- function(x) {
       x <- as.matrix(x)
       n <- ncol(x)

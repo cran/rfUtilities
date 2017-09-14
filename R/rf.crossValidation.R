@@ -3,7 +3,7 @@
 #'    
 #' @param x                 random forest object
 #' @param xdata             x data used in model
-#' @param p                 Percent data withhold
+#' @param p                 Proportion data withhold
 #' @param n                 Number of cross validations
 #' @param seed              Sets random seed in R global environment
 #' @param ...               Additional arguments passed to Random Forests 
@@ -29,9 +29,12 @@
 #'
 #' @details
 #' For classification problems, the cross-validation statistics are based on the prediction error on the withheld data: 
-#' Total observed accuracy represents the percent correctly classified (aka, PCC) and is considered as a naive measure of agreement. The diagonal of the confusion matrix represents correctly classified observations where off-diagonals represent cross-classification error. The primary issue with this evaluation is that does not reveal if error was evenly distributed between classes.   
-#' To represent the balance of error one can use omission and commission statistics such as estimates of users and producers accuracy. User's accuracy corresponds to error of commission (inclusion), observations being erroneously included in a given class. The commission errors are represented by row sums of the matrix. Producer's accuracy corresponds to error of omission (exclusion), observations being erroneously excluded from a given class. The omission errors are represented by column sums of the matrix.
-#' None of the previous statistics account for random agreement influencing the accuracy measure. The kappa statistic is a chance corrected metric that reflects the difference between observed agreement and agreement expected by random chance. A kappa of k=0.85 would indicate that there is 85% better agreement than by chance alone.  
+#' Total observed accuracy represents the percent correctly classified (aka, PCC) and is considered as a naive measure of agreement. 
+#' The diagonal of the confusion matrix represents correctly classified observations where off-diagonals represent cross-classification error. The primary issue with this evaluation is that does not reveal if error was evenly distributed between classes.
+#' To represent the balance of error one can use omission and commission statistics such as estimates of users and producers accuracy. User's accuracy corresponds to error of commission (inclusion), observations being erroneously included in a given class.
+#' The commission errors are represented by row sums of the matrix. Producer's accuracy corresponds to error of omission (exclusion), observations being erroneously excluded from a given class. The omission errors are represented by column sums of the matrix.
+#' None of the previous statistics account for random agreement influencing the accuracy measure. The kappa statistic is a chance corrected metric that reflects the difference between observed agreement and agreement expected by random chance.
+#' A kappa of k=0.85 would indicate that there is 85% better agreement than by chance alone.  
 #'   \itemize{ 
 #'   \item   pcc = [Number of correct observations / total number of observations] 
 #'   \item   pcc = [Number of correct observations / total number of observations] 
@@ -42,14 +45,13 @@
 #'
 #' @author Jeffrey S. Evans <jeffrey_evans<at>tnc.org>
 #'
-#' @references
-#' Evans, J.S. and S.A. Cushman (2009) Gradient Modeling of Conifer Species Using Random Forest. Landscape Ecology 5:673-683.
-#' Murphy M.A., J.S. Evans, and A.S. Storfer (2010) Quantify Bufo boreas connectivity in Yellowstone National Park with landscape genetics. Ecology 91:252-261
-#' Evans J.S., M.A. Murphy, Z.A. Holden, S.A. Cushman (2011). Modeling species distribution and change using Random Forests CH.8 in Predictive Modeling in Landscape Ecology eds Drew, CA, Huettmann F, Wiersma Y. Springer 
+#' @references Evans, J.S. and S.A. Cushman (2009) Gradient Modeling of Conifer Species Using Random Forest. Landscape Ecology 5:673-683.
+#' @references Murphy M.A., J.S. Evans, and A.S. Storfer (2010) Quantify Bufo boreas connectivity in Yellowstone National Park with landscape genetics. Ecology 91:252-261
+#' @references Evans J.S., M.A. Murphy, Z.A. Holden, S.A. Cushman (2011). Modeling species distribution and change using Random Forests CH.8 in Predictive Modeling in Landscape Ecology eds Drew, CA, Huettmann F, Wiersma Y. Springer 
 #' 
 #' @examples 
 #' \dontrun{
-#' require(randomForest)
+#' library(randomForest)
 #'
 #' # For classification
 #'   data(iris)
@@ -77,6 +79,7 @@
 #'    plot(rf.cv)  
 #'    plot(rf.cv, stat = "mse")
 #'    plot(rf.cv, stat = "var.exp")
+#'	plot(rf.cv, stat = "mae")
 #' }	 
 #'	  
 #' @exportClass rf.cv
@@ -87,10 +90,39 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, ...) {
   if (x$type == "unsupervised") { stop("Unsupervised classification not supported")   
   } else if (x$type == "regression") {
     cat("running:", x$type, "cross-validation", "with", n, "iterations", "\n")
-    rmse <- function(obs, pred) sqrt(mean((obs - pred))^2)
-    y.rmse <- vector()
-    model.mse <- vector()
+	# Validation statistics (RMSE, MBE, MAE)
+        # Root Mean Square Error (RMSE) 
+        rmse <- function(y, x, norm = FALSE){
+          if( length(y[is.na(y)]) > 0) stop("NA values present in y data")
+          if( length(x[is.na(x)]) > 0) stop("NA values present in x data")
+            e <- sqrt(mean((y - x)^2)) 
+        	  if( norm ) e <- e / diff(range(y, na.rm = TRUE))
+            return( e )		   
+        }          
+        # Mean Bias Error (MBE) 
+        mbe <- function(y, x, norm = FALSE){
+          if( length(y[is.na(y)]) > 0) stop("NA values present in y data")
+          if( length(x[is.na(x)]) > 0) stop("NA values present in x data")
+            e <- mean(x - y) * 100
+            # e <- mean(x - y) / mean(y) * 100 
+        	  if( norm ) e <- e / diff(range(y, na.rm = TRUE))
+            return( e )		   
+        }     
+        # Mean Absolute Error (MAE) 
+        mae <- function(y, x, norm = FALSE){
+          if( length(y[is.na(y)]) > 0) stop("NA values present in y data")
+          if( length(x[is.na(x)]) > 0) stop("NA values present in x data") 
+            e <- mean(abs(y - x))
+              if( norm ) e <- e / diff(range(y))
+            return( e )		   
+        }
+    # Define validation vectors	
+    y.rmse <- vector()  
+ 	y.mae <- vector()
+	y.mbe <- vector()
 	model.varExp <- vector()
+	model.mse <- vector()	
+	# Start cross-validation
     sample.size = round( (length(x$y) * p), digits=0)
 	  for(i in 1:n) {
         dat <- data.frame(y=x$y, xdata) 
@@ -98,14 +130,17 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, ...) {
         dat.cv <- dat[sidx,]	  
 	    dat.sub <- dat[-sidx,] 
 	     rf.fit <- randomForest::randomForest(y=dat.sub[,"y"], x=dat.sub[,2:ncol(dat.sub)], ...)    
-         y.rmse <- append(y.rmse, rmse(dat.cv[,"y"] , 
-	                      stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)])) )
-         model.mse <- append(model.mse, rf.fit$mse[length(rf.fit$mse)])  
-	     model.varExp <- append(model.varExp, round(100*rf.fit$rsq[length(rf.fit$rsq)], digits=2) )
+ 		 model.mse <- append(model.mse, rf.fit$mse[length(rf.fit$mse)]) 
+	     model.varExp <- append(model.varExp, round(100*rf.fit$rsq[length(rf.fit$rsq)], digits=2) )         
+		 y.rmse <- append(y.rmse, rmse(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)])) )
+         y.mbe <- append(y.mbe, mbe(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)])) )
+		 y.mae <- append(y.mae, mae(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)])) )
       }		 
 	 r.cv <- list(fit.var.exp=round(100*x$rsq[length(x$rsq)], digits=2), 
 	              fit.mse=stats::median(x$mse),
 	              y.rmse = y.rmse, 
+				  y.mbe = y.mbe,
+				  y.mae = y.mae,
 				  model.mse = model.mse, 
 				  model.varExp = model.varExp )
        class(r.cv) <- c("rf.cv", "regression", "list")

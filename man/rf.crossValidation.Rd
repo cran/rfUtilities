@@ -11,7 +11,7 @@ rf.crossValidation(x, xdata, p = 0.1, n = 99, seed = NULL, ...)
 
 \item{xdata}{x data used in model}
 
-\item{p}{Percent data withhold}
+\item{p}{Proportion data withhold}
 
 \item{n}{Number of cross validations}
 
@@ -44,9 +44,12 @@ Implements a permutation test cross-validation for Random Forests models
 }
 \details{
 For classification problems, the cross-validation statistics are based on the prediction error on the withheld data: 
-Total observed accuracy represents the percent correctly classified (aka, PCC) and is considered as a naive measure of agreement. The diagonal of the confusion matrix represents correctly classified observations where off-diagonals represent cross-classification error. The primary issue with this evaluation is that does not reveal if error was evenly distributed between classes.   
-To represent the balance of error one can use omission and commission statistics such as estimates of users and producers accuracy. User's accuracy corresponds to error of commission (inclusion), observations being erroneously included in a given class. The commission errors are represented by row sums of the matrix. Producer's accuracy corresponds to error of omission (exclusion), observations being erroneously excluded from a given class. The omission errors are represented by column sums of the matrix.
-None of the previous statistics account for random agreement influencing the accuracy measure. The kappa statistic is a chance corrected metric that reflects the difference between observed agreement and agreement expected by random chance. A kappa of k=0.85 would indicate that there is 85% better agreement than by chance alone.  
+Total observed accuracy represents the percent correctly classified (aka, PCC) and is considered as a naive measure of agreement. 
+The diagonal of the confusion matrix represents correctly classified observations where off-diagonals represent cross-classification error. The primary issue with this evaluation is that does not reveal if error was evenly distributed between classes.
+To represent the balance of error one can use omission and commission statistics such as estimates of users and producers accuracy. User's accuracy corresponds to error of commission (inclusion), observations being erroneously included in a given class.
+The commission errors are represented by row sums of the matrix. Producer's accuracy corresponds to error of omission (exclusion), observations being erroneously excluded from a given class. The omission errors are represented by column sums of the matrix.
+None of the previous statistics account for random agreement influencing the accuracy measure. The kappa statistic is a chance corrected metric that reflects the difference between observed agreement and agreement expected by random chance.
+A kappa of k=0.85 would indicate that there is 85% better agreement than by chance alone.  
   \itemize{ 
   \item   pcc = [Number of correct observations / total number of observations] 
   \item   pcc = [Number of correct observations / total number of observations] 
@@ -57,7 +60,7 @@ For regression problems, a Bootstrap is constructed and the subset models MSE an
 }
 \examples{
 \dontrun{
-require(randomForest)
+library(randomForest)
 
 # For classification
   data(iris)
@@ -85,12 +88,15 @@ rf.mdl <- randomForest(y=airquality[,"Ozone"], x=airquality[,2:4])
    plot(rf.cv)  
    plot(rf.cv, stat = "mse")
    plot(rf.cv, stat = "var.exp")
+plot(rf.cv, stat = "mae")
 }	 
   
 }
 \references{
 Evans, J.S. and S.A. Cushman (2009) Gradient Modeling of Conifer Species Using Random Forest. Landscape Ecology 5:673-683.
+
 Murphy M.A., J.S. Evans, and A.S. Storfer (2010) Quantify Bufo boreas connectivity in Yellowstone National Park with landscape genetics. Ecology 91:252-261
+
 Evans J.S., M.A. Murphy, Z.A. Holden, S.A. Cushman (2011). Modeling species distribution and change using Random Forests CH.8 in Predictive Modeling in Landscape Ecology eds Drew, CA, Huettmann F, Wiersma Y. Springer
 }
 \author{

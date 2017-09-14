@@ -11,7 +11,7 @@
 
 \item{type}{Which result to evaluate c("cv","model")}
 
-\item{stat}{Which statistic to plot: classification: "users.accuracy", "producers.accuracy", "kappa", "oob", regression: "rmse", "mse", "var.exp"}
+\item{stat}{Which statistic to plot: classification: "users.accuracy", "producers.accuracy", "kappa", "oob", regression: "rmse", "mse", "var.exp", "mae", "mbe"}
 
 \item{...}{Additional arguments passed to plot}
 }

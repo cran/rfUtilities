@@ -39,11 +39,14 @@ Implements Murphy et al., (2010) Random Forests model selection approach.
 }
 \details{
 If you want to run classification, make sure that y is a factor, otherwise the randomForest model runs in regression mode
-For classification problems the model selection criteria is: smallest OOB error, smallest maximum within class error, and fewest parameters. For regression problems, the model selection criteria is; largest %variation explained, smallest MSE and fewest parameters.
+For classification problems the model selection criteria is: smallest OOB error, smallest maximum within class error, and fewest parameters. 
+For regression problems, the model selection criteria is; largest %variation explained, smallest MSE and fewest parameters.
 
-The "mir" scale option performs a row standardization and the "se" option performs normalization using the "standard errors" of the permutation-based importance measure. Both options result in a 0-1 range but, "se" sums to 1.
+The "mir" scale option performs a row standardization and the "se" option performs normalization using the "standard errors" of the permutation-based importance measure. 
+Both options result in a 0-1 range but, "se" sums to 1.
 The scaled importance measures are calculated as: mir = i/max(i) and se = (i / se) / ( sum(i) / se).
-The parsimony argument is the percent of allowable error surrounding competing models. For example, if there are two competing models, a selected model with 5 parameters and a competing model with 3 parameters, and parsimony = 0.05, if there is +/- 5% error in the fewer parameter model it will be selected at the final model.
+The parsimony argument is the percent of allowable error surrounding competing models. For example, if there are two competing models, a selected model with 5 parameters 
+and a competing model with 3 parameters, and parsimony = 0.05, if there is +/- 5% error in the fewer parameter model it will be selected at the final model.
 }
 \examples{
 # Classification on iris data
@@ -80,7 +83,9 @@ vars <- rf.regress$selvars
 }
 \references{
 Evans, J.S. and S.A. Cushman (2009) Gradient Modeling of Conifer Species Using Random Forest. Landscape Ecology 5:673-683.
+
 Murphy M.A., J.S. Evans, and A.S. Storfer (2010) Quantify Bufo boreas connectivity in Yellowstone National Park with landscape genetics. Ecology 91:252-261
+
 Evans J.S., M.A. Murphy, Z.A. Holden, S.A. Cushman (2011). Modeling species distribution and change using Random Forests CH.8 in Predictive Modeling in Landscape Ecology eds Drew, CA, Huettmann F, Wiersma Y. Springer
 }
 \seealso{

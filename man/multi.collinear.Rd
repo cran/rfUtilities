@@ -5,7 +5,7 @@
 \title{Multi-collinearity test}
 \usage{
 multi.collinear(x, perm = FALSE, leave.out = FALSE, n = 99,
-  p = 0.0000001)
+  p = 0.0000001, na.rm = FALSE)
 }
 \arguments{
 \item{x}{data.frame or matrix object}
@@ -17,9 +17,12 @@ multi.collinear(x, perm = FALSE, leave.out = FALSE, n = 99,
 \item{n}{Number of permutations}
 
 \item{p}{multi-collinearity threshold}
+
+\item{na.rm}{(FALSE/TRUE) Remove NA values}
 }
 \value{
-If perm == TRUE a data.frame of indicating the frequency that a variable was collinear and, if leave.out = TRUE the number of times it was omitted. Otherwise, a vector of collinear variables is returned. If no colinear variables are identified a NULL is returned.
+If perm == TRUE a data.frame of indicating the frequency that a variable was collinear and, if leave.out = TRUE 
+        the number of times it was omitted. Otherwise, a vector of collinear variables is returned. If no colinear variables are identified a NULL is returned.
 }
 \description{
 Test for multi-collinearity in data using qr-matrix decomposition

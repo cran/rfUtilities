@@ -43,7 +43,12 @@ print.rf.cv <- function(x, ...) {
     cat("Fit MSE", "=", x[["fit.mse"]], "\n")
     cat("Fit percent variance explained", "=", x[["fit.var.exp"]], "\n")
   	cat("Median permuted MSE", "=", stats::median(x[["model.mse"]]), "\n")
-	cat("Median permuted percent variance explained", "=", stats::median(x[["model.varExp"]]), "\n")
-	cat("Median cross-validation (obs vs. pred) RMSE", "=", stats::var(x[["y.rmse"]]), "\n")
+	cat("Median permuted percent variance explained", "=", stats::median(x[["model.varExp"]]), "\n")	
+	cat("Median cross-validation RMSE", "=", stats::median(x[["y.rmse"]]), "\n")
+    cat("Median cross-validation MBE", "=", stats::median(x[["y.mbe"]]), "\n")
+	cat("Median cross-validation MAE", "=", stats::median(x[["y.mae"]]), "\n")	
+	cat("RMSE cross-validation error variance", "=", stats::var(x[["y.rmse"]]), "\n")
+    cat("MBE cross-validation error variance", "=", stats::var(x[["y.mbe"]]), "\n")
+	cat("MAE cross-validation error variance", "=", stats::var(x[["y.mae"]]), "\n")
   }  
 }
