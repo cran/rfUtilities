@@ -68,4 +68,9 @@ rfUtilities_2.1-1
 * Added additional information to print and summary for rf.crossValidation
 
 * Added additional print capacity for "mae" and "mbe" statistics in rf.crossValidation
-   
+
+rfUtilities_2.1-2
+=================
+* Added new function "log.loss" for evaluation of estimate quality in binomial models using cross-entropy or log likelihood loss 
+* Added new function "probabily.calibration" for performing an isotonic regression calibration of posterior probabilities
+* Added new function "rf.effectSize" for deriving parameter effect size based on partial dependency (Cafri & Bailey, 2016)

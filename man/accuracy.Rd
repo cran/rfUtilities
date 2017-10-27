@@ -18,13 +18,13 @@ A list class object with the following components:
 \item   users.accuracy         The users accuracy  
 \item   producers.accuracy     The producers accuracy
 \item   kappa                  Cohen's Kappa (chance corrected accuracy)
-\item   sensitivity            Sensitivity
+\item   sensitivity            Sensitivity (aka, recall)
 \item   specificity            Specificity 
 \item   plr                    Positive Likelihood Ratio   
 \item   nlr                    Negative Likelihood Ratio  
 \item   typeI.error            Type I error
 \item   typeII.error           Type II error
-\item   gain                   Information gain
+\item   gain                   Information gain (aka precision)
 \item   f.score                F-score
 \item   auc                    Area Under the ROC Curve
 \item   confusion              A confusion matrix 
@@ -47,8 +47,6 @@ Positive Likelihood Ratio  = sensitivity / (1 - specificity)
 Negative Likelihood Ratio  = (1 - sensitivity) / specificity
 
 gain  = sensitivity / ( (true positives + true negatives) / n )
-
-recall = true positives / (true positives + false negatives)
 
 auc = (tpr - fpr + 1) / 2
 

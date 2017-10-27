@@ -4,7 +4,8 @@
 \alias{rf.crossValidation}
 \title{Random Forest Classification or Regression Model Cross-validation}
 \usage{
-rf.crossValidation(x, xdata, p = 0.1, n = 99, seed = NULL, ...)
+rf.crossValidation(x, xdata, p = 0.1, n = 99, seed = NULL,
+  normalize = FALSE, ...)
 }
 \arguments{
 \item{x}{random forest object}
@@ -16,6 +17,8 @@ rf.crossValidation(x, xdata, p = 0.1, n = 99, seed = NULL, ...)
 \item{n}{Number of cross validations}
 
 \item{seed}{Sets random seed in R global environment}
+
+\item{normalize}{(FALSE/TRUE) For regression, should rmse, mbe and mae be normalized using (max(y) - min(y))}
 
 \item{...}{Additional arguments passed to Random Forests}
 }

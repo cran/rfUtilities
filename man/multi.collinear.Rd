@@ -10,9 +10,9 @@ multi.collinear(x, perm = FALSE, leave.out = FALSE, n = 99,
 \arguments{
 \item{x}{data.frame or matrix object}
 
-\item{perm}{(FALSE/TRUE) Should a permitation be applied}
+\item{perm}{(FALSE/TRUE) Should a permutation be applied}
 
-\item{leave.out}{(FALSE/TRUE) Should a variable be left out at each permitation}
+\item{leave.out}{(FALSE/TRUE) Should a variable be left out at each permutation}
 
 \item{n}{Number of permutations}
 
@@ -28,7 +28,7 @@ If perm == TRUE a data.frame of indicating the frequency that a variable was col
 Test for multi-collinearity in data using qr-matrix decomposition
 }
 \note{
-A permitation approach is not available where, at each iteration, the columns are randomly rearranged and a parameter dropped. The frequency that a variable is identified as collinear is accumulated. 
+A permutation approach is not available where, at each iteration, the columns are randomly rearranged and a parameter dropped. The frequency that a variable is identified as collinear is accumulated. 
 The multi-collinearity threshold needs to be adjusted based on number of parameters. For small number(s) of variables (<20) use ~1e-07 and for larger ~0.05
 }
 \examples{

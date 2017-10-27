@@ -2,8 +2,8 @@
 #' @description Test for multi-collinearity in data using qr-matrix decomposition
 #'
 #' @param x             data.frame or matrix object
-#' @param perm         (FALSE/TRUE) Should a permitation be applied
-#' @param leave.out    (FALSE/TRUE) Should a variable be left out at each permitation
+#' @param perm         (FALSE/TRUE) Should a permutation be applied
+#' @param leave.out    (FALSE/TRUE) Should a variable be left out at each permutation
 #' @param n             Number of permutations
 #' @param p             multi-collinearity threshold
 #' @param na.rm        (FALSE/TRUE) Remove NA values
@@ -18,7 +18,7 @@
 #'  Dongarra, J. J., Bunch, J. R., Moler, C. B. and Stewart, G. W. (1978) LINPACK Users Guide. Philadelphia: SIAM Publications. 
 #'
 #' @note
-#' A permitation approach is not available where, at each iteration, the columns are randomly rearranged and a parameter dropped. The frequency that a variable is identified as collinear is accumulated. 
+#' A permutation approach is not available where, at each iteration, the columns are randomly rearranged and a parameter dropped. The frequency that a variable is identified as collinear is accumulated. 
 #' The multi-collinearity threshold needs to be adjusted based on number of parameters. For small number(s) of variables (<20) use ~1e-07 and for larger ~0.05  
 #'
 #' @examples  

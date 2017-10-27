@@ -1,22 +1,22 @@
 Package: rfUtilities
 Title: Random Forests Model Selection and Performance Evaluation
-Version: 2.1-1
-Date: 2017-09-17
+Version: 2.1-2
+Date: 2017-10-26
 Authors@R: c(
 	person("Jeffrey S.", "Evans", role = c("cre", "aut"),  email = "jeffrey_evans@tnc.org"),
 	person("Melanie A.", "Murphy", role = "ctb") )
 Description: Utilities for Random Forest model selection, class balance
     correction, significance test, cross validation and partial dependency
     plots.
-Depends: R (>= 3.2.1)
-Imports: randomForest (>= 4.6-10)
+Depends: R (>= 3.3)
+Imports: randomForest (>= 4.6-12)
 Maintainer: Jeffrey S. Evans <jeffrey_evans@tnc.org>
 License: GPL-3
 NeedsCompilation: no
 Repository: CRAN
 LazyData: true
 RoxygenNote: 6.0.1
-Packaged: 2017-09-14 21:18:20 UTC; jeffrey_evans
+Packaged: 2017-10-27 15:39:40 UTC; jeffrey_evans
 Author: Jeffrey S. Evans [cre, aut],
   Melanie A. Murphy [ctb]
-Date/Publication: 2017-09-14 22:33:06 UTC
+Date/Publication: 2017-10-27 16:24:48 UTC

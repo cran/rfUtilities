@@ -10,13 +10,13 @@
 #' \item   users.accuracy         The users accuracy  
 #' \item   producers.accuracy     The producers accuracy
 #' \item   kappa                  Cohen's Kappa (chance corrected accuracy)
-#' \item   sensitivity            Sensitivity
+#' \item   sensitivity            Sensitivity (aka, recall)
 #' \item   specificity            Specificity 
 #' \item   plr                    Positive Likelihood Ratio   
 #' \item   nlr                    Negative Likelihood Ratio  
 #' \item   typeI.error            Type I error
 #' \item   typeII.error           Type II error
-#' \item   gain                   Information gain
+#' \item   gain                   Information gain (aka precision)
 #' \item   f.score                F-score
 #' \item   auc                    Area Under the ROC Curve
 #' \item   confusion              A confusion matrix 
@@ -29,7 +29,6 @@
 #' @note Positive Likelihood Ratio  = sensitivity / (1 - specificity) 
 #' @note Negative Likelihood Ratio  = (1 - sensitivity) / specificity
 #' @note gain  = sensitivity / ( (true positives + true negatives) / n )
-#' @note recall = true positives / (true positives + false negatives)
 #' @note auc = (tpr - fpr + 1) / 2
 #' @note F-Score = 2 * (precision * recall) / (precision + recall) 
 #' @note Hanssen-Kuiper skill score (aka true score statistic) = [(tp * tn) - (fp * fn)] / [(tp + fn) + (fp + tn)]

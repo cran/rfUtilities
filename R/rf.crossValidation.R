@@ -6,6 +6,7 @@
 #' @param p                 Proportion data withhold
 #' @param n                 Number of cross validations
 #' @param seed              Sets random seed in R global environment
+#' @param normalize         (FALSE/TRUE) For regression, should rmse, mbe and mae be normalized using (max(y) - min(y))
 #' @param ...               Additional arguments passed to Random Forests 
 #'
 #' @return  For classification a "rf.cv"", "classification" class object with the following components:
@@ -84,7 +85,7 @@
 #'	  
 #' @exportClass rf.cv
 #' @export 	
-rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, ...) {
+rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FALSE, ...) {
   if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
     if(!is.null(seed)) { set.seed(seed) }
   if (x$type == "unsupervised") { stop("Unsupervised classification not supported")   
@@ -103,7 +104,7 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, ...) {
         mbe <- function(y, x, norm = FALSE){
           if( length(y[is.na(y)]) > 0) stop("NA values present in y data")
           if( length(x[is.na(x)]) > 0) stop("NA values present in x data")
-            e <- mean(x - y) * 100
+            e <- mean(x - y)
             # e <- mean(x - y) / mean(y) * 100 
         	  if( norm ) e <- e / diff(range(y, na.rm = TRUE))
             return( e )		   
@@ -132,9 +133,9 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, ...) {
 	     rf.fit <- randomForest::randomForest(y=dat.sub[,"y"], x=dat.sub[,2:ncol(dat.sub)], ...)    
  		 model.mse <- append(model.mse, rf.fit$mse[length(rf.fit$mse)]) 
 	     model.varExp <- append(model.varExp, round(100*rf.fit$rsq[length(rf.fit$rsq)], digits=2) )         
-		 y.rmse <- append(y.rmse, rmse(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)])) )
-         y.mbe <- append(y.mbe, mbe(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)])) )
-		 y.mae <- append(y.mae, mae(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)])) )
+		 y.rmse <- append(y.rmse, rmse(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)]), norm=normalize) )
+         y.mbe <- append(y.mbe, mbe(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)]), norm=normalize) )
+		 y.mae <- append(y.mae, mae(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)]), norm=normalize) )
       }		 
 	 r.cv <- list(fit.var.exp=round(100*x$rsq[length(x$rsq)], digits=2), 
 	              fit.mse=stats::median(x$mse),

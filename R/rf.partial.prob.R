@@ -1,21 +1,21 @@
 #' @title Random Forest probability scaled partial dependency plots
 #' @description Produces partial dependency plots with probability distribution based on scaled margin distances.
 #'       
-#' @param x Object of class randomForest 
-#' @param pred.data Training data.frame used for constructing the plot, 
-#' @param xname Name of the variable for calculating partial dependence 
-#' @param which.class The class to focus on
-#' @param w Weights to be used in averaging (if not supplied, mean is not weighted) 
-#' @param prob Scale distances to probabilities
-#' @param plot Plot results (TRUE/FALSE)
-#' @param smooth Apply spline.smooth to y
-#' @param raw Plot unsmoothed values
-#' @param rug Draw hash marks on plot representing deciles of x
-#' @param n.pt Number of points on the grid for evaluating partial dependence.
-#' @param xlab x-axis plot label
-#' @param ylab y-axis plot label
-#' @param main Plot label for main
-#' @param ... Additional graphical parameters passed to plot
+#' @param x              Object of class randomForest 
+#' @param pred.data      Training data.frame used for constructing the plot, 
+#' @param xname          Name of the variable for calculating partial dependence 
+#' @param which.class    The class to focus on
+#' @param w              Weights to be used in averaging (if not supplied, mean is not weighted) 
+#' @param prob           Scale distances to probabilities
+#' @param plot           Plot results (TRUE/FALSE)
+#' @param smooth         Apply spline.smooth to y
+#' @param raw            Plot unsmoothed values
+#' @param rug            Draw hash marks on plot representing deciles of x
+#' @param n.pt           Number of points on the grid for evaluating partial dependence.
+#' @param xlab           x-axis plot label
+#' @param ylab           y-axis plot label
+#' @param main           Plot label for main
+#' @param ...            Additional graphical parameters passed to plot
 #
 #' @return A list class object with fit x,y. If smooth=TRUE y represents smoothed scaled margin distance values 
 #'
@@ -37,13 +37,12 @@
 rf.partial.prob <- function(x, pred.data, xname, which.class, w, prob=TRUE, plot=TRUE,
                             smooth=FALSE, raw=FALSE, rug=FALSE, n.pt, xlab, ylab, main, ...) {  
     if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
-	if (is.null(x$forest)) stop("Object does not contain an ensemble \n")
-	if(!x$type != "regression")	stop("Regression not supported \n")	   
-	if (missing(which.class)) stop("Class name missing \n")
-	if (missing(xname)) stop("X Variable name missing \n")
-	if (missing(x)) stop("randomForest object missing \n")
+	  if (is.null(x$forest)) stop("Object does not contain an ensemble \n")
+	    if(!x$type != "regression")	stop("Regression not supported \n")	   
+	      if (missing(which.class)) stop("Class name missing \n")
+	    if (missing(xname)) stop("X Variable name missing \n")
+	  if (missing(x)) stop("randomForest object missing \n")
     if (missing(pred.data)) stop("New data missing \n")
-	
 	focus <- charmatch(which.class, colnames(x$votes))
     if (is.na(focus)) stop(which.class, "is not one of the class labels")
     xv <- pred.data[, xname]
