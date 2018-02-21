@@ -9,24 +9,28 @@
 #' @param ... Additional Random Forests arguments 
 #'
 #' @return A list class object with the following components:
-#' @return For Regression problems:    
-#' @return     RandRsquare Vector of random R-square values 
-#' @return     Rsquare The R-square of the "true" model  
-#' @return     Accept Is the model significant at specified p-value (TRUE/FALSE)
-#' @return     TestQuantile Quantile threshold used in significance plot
-#' @return     pValueThreshold Specified p-value
-#' @return     pValue p-values of randomizations
-#' @return     nPerm Number of permutations 
+#' @return \strong{For Regression problems:} 
+#' \itemize{  
+#'   \item {"RandRsquare"} {Vector of random R-square values} 
+#'   \item {"Rsquare"} {The R-square of the "true" model}  
+#'   \item {"Accept"} {model significant at specified p-value (TRUE/FALSE)}
+#'   \item {"TestQuantile"} {Quantile threshold used in significance plot}
+#'   \item {"pValueThreshold"} {Specified p-value}
+#'   \item {"pValue"} {p-values of randomizations}
+#'   \item {"nPerm"} {Number of permutations}
+#'  } 
 #'
-#' @return For Classification problems:
-#' @return     RandOOB Vector of random out-of-bag (OOB) values 
-#' @return     RandMaxError Maximum error of randomizations 
-#' @return     test.OOB Error if the "true" model
-#' @return     Accept Is the model significant at specified p-value (TRUE/FALSE)
-#' @return     TestQuantile Quantile threshold used in significance plot
-#' @return     pValueThreshold Specified p-value
-#' @return     pValue p-values of randomizations
-#' @return     nPerm Number of permutations 
+#' @return \strong{For Classification problems:}
+#' \itemize{  
+#'   \item {"RandOOB"} {Vector of random out-of-bag (OOB) values} 
+#'   \item {"RandMaxError"} {Maximum error of randomizations} 
+#'   \item {"test.OOB"} {Error if the "true" model}
+#'   \item {"Accept"} {Is the model significant at specified p-value (TRUE/FALSE)}
+#'   \item {"TestQuantile"} {Quantile threshold used in significance plot}
+#'   \item {"pValueThreshold"} {Specified p-value}
+#'   \item {"pValue"} {p-values of randomizations}
+#'   \item {"nPerm"} {Number of permutations}
+#'  }
 #'
 #' @author Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
 #'
@@ -56,7 +60,7 @@
 #' @export
 rf.significance <- function(x, xdata, q=0.99, p=0.05, nperm=999, ...) 
   {
-  if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
+  if(!any(class(x) %in% c("randomForest","list"))) stop("x is not a randomForest object")
     class.p <- function(x, test, nperm) { 
       if ( length( x[x >= test] ) < 1 ) { 
 	     error = 1 

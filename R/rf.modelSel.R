@@ -10,15 +10,17 @@
 #' @param parsimony              Threshold for competing model (0-1)
 #' @param ...                    Additional arguments to pass to randomForest (e.g., ntree=1000, replace=TRUE, proximity=TRUE)
 #'
-#' @return A list class object with the following components:
-#'  @return   rf.final           Final selected model, if final = TRUE(randomForest model object)
-#'  @return   sel.vars           Final selected variables (vector)
-#'  @return   test               Validation parameters used on model selection (data.frame)
-#'  @return   sel.importance     Importance values for selected model (data.frame)
-#'  @return   importance         Importance values for all models (data.frame)
-#'  @return   parameters         Variables used in each tested model (list)
-#'  @return   s                  Type of scaling used for importance
-#'
+#' @return \strong{A list class object with the following components:} 
+#' \itemize{  
+#'   \item   {"rf.final"} {Final selected model, if final = TRUE(randomForest model object)}
+#'   \item   {"sel.vars"} {Final selected variables (vector)}
+#'   \item   {"test"} {Validation parameters used on model selection (data.frame)}
+#'   \item   {"sel.importance"} {Importance values for selected model (data.frame)}
+#'   \item   {"importance"} {Importance values for all models (data.frame)}
+#'   \item   {"parameters"} {Variables used in each tested model (list)}
+#'   \item   {"s"} {Type of scaling used for importance}
+#' }
+#' 
 #' @details
 #' If you want to run classification, make sure that y is a factor, otherwise the randomForest model runs in regression mode
 #' For classification problems the model selection criteria is: smallest OOB error, smallest maximum within class error, and fewest parameters. 

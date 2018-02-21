@@ -3,10 +3,11 @@
 #'    
 #' @param x                 random forest object
 #' @param xdata             x data used in model
-#' @param p                 Proportion data withhold
-#' @param n                 Number of cross validations
+#' @param p                 Proportion data withhold (default p=0.10)
+#' @param n                 Number of cross validations (default n=99)
 #' @param seed              Sets random seed in R global environment
 #' @param normalize         (FALSE/TRUE) For regression, should rmse, mbe and mae be normalized using (max(y) - min(y))
+#' @param bootstrap         (FALSE/TRUE) Should a bootstrap sampling be applied. If FALSE, an n-th percent withold will be conducted
 #' @param ...               Additional arguments passed to Random Forests 
 #'
 #' @return  For classification a "rf.cv"", "classification" class object with the following components:
@@ -83,11 +84,15 @@
 #'	plot(rf.cv, stat = "mae")
 #' }	 
 #'	  
+#' @seealso \code{\link[randomForest]{randomForest}} for randomForest ... options 
+#'
 #' @exportClass rf.cv
 #' @export 	
-rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FALSE, ...) {
-  if (!inherits(x, "randomForest")) stop("x is not randomForest class object")
+rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FALSE, 
+                               bootstrap = FALSE, ...) {
+  if(!any(class(x) %in% c("randomForest","list"))) stop("x is not a randomForest object")
     if(!is.null(seed)) { set.seed(seed) }
+	  if(bootstrap) cat("Bootstrap sampling is being applied,", paste("p",p,sep="="), "argument is ignored", "\n")
   if (x$type == "unsupervised") { stop("Unsupervised classification not supported")   
   } else if (x$type == "regression") {
     cat("running:", x$type, "cross-validation", "with", n, "iterations", "\n")
@@ -117,26 +122,33 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FA
               if( norm ) e <- e / diff(range(y))
             return( e )		   
         }
-    # Define validation vectors	
+    # Define validation vectors
     y.rmse <- vector()  
  	y.mae <- vector()
 	y.mbe <- vector()
 	model.varExp <- vector()
-	model.mse <- vector()	
+	model.mse <- vector()
+    if(bootstrap) boot.sample.size <- vector()			
 	# Start cross-validation
     sample.size = round( (length(x$y) * p), digits=0)
 	  for(i in 1:n) {
         dat <- data.frame(y=x$y, xdata) 
-	    sidx <- sample(1:nrow(dat), sample.size)
-        dat.cv <- dat[sidx,]	  
-	    dat.sub <- dat[-sidx,] 
+	if(!bootstrap) {	
+		sidx <- sample(1:nrow(dat), sample.size)
+	    dat.sub <- dat[-sidx,]
+        dat.cv <- dat[sidx,]		
+	} else {	
+	    dat.sub <- dat[sample(1:nrow(dat), replace=TRUE),]
+        dat.cv <- dat[which(!rownames(dat) %in% rownames(dat.sub)),]		
+    }	
 	     rf.fit <- randomForest::randomForest(y=dat.sub[,"y"], x=dat.sub[,2:ncol(dat.sub)], ...)    
  		 model.mse <- append(model.mse, rf.fit$mse[length(rf.fit$mse)]) 
 	     model.varExp <- append(model.varExp, round(100*rf.fit$rsq[length(rf.fit$rsq)], digits=2) )         
 		 y.rmse <- append(y.rmse, rmse(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)]), norm=normalize) )
          y.mbe <- append(y.mbe, mbe(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)]), norm=normalize) )
 		 y.mae <- append(y.mae, mae(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)]), norm=normalize) )
-      }		 
+         if(bootstrap) boot.sample.size <- append(boot.sample.size, nrow(dat.cv) )
+	  }		 
 	 r.cv <- list(fit.var.exp=round(100*x$rsq[length(x$rsq)], digits=2), 
 	              fit.mse=stats::median(x$mse),
 	              y.rmse = y.rmse, 
@@ -147,7 +159,8 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FA
        class(r.cv) <- c("rf.cv", "regression", "list")
      return( r.cv )
    } else if (x$type == "classification") {
-    cat("running:", x$type, "cross-validation", "with", n, "iterations", "\n")	
+    cat("running:", x$type, "cross-validation", "with", n, "iterations", "\n")
+    if(bootstrap) boot.sample.size <- vector()	
     classes <- as.vector(levels( x$y ))	
       sample.size = round( (length(x$y) * p) / length(x$classes), digits=0) 
 	    cv.ua <- as.data.frame(array(0, dim=c(0,length(classes))))
@@ -156,18 +169,29 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FA
 	    mdl.pa <- as.data.frame(array(0, dim=c(0,length(classes))))
       mdl.oob <- as.data.frame(array(0, dim=c(0,2+length(classes))))
 	cv.oob <- as.data.frame(array(0, dim=c(0,2+length(classes))))		
-      for(i in 1:n) {	
-	    samp.index <- vector()
-          for(r in unique(x$y)) {			  
-            cvalue <- which(x$y == r) 	  
-            samp.index <- append(samp.index, sample(cvalue, sample.size)) 
-          }		  
-	      tx <- xdata[samp.index,]
-	      ty <- x$y[samp.index]
-	      mx <- xdata[-samp.index,]
-	      my <- x$y[-samp.index] 
+    for(i in 1:n) {
+	if(!bootstrap) {	
+	  samp.index <- vector()
+        for(r in unique(x$y)) {			  
+          cvalue <- which(x$y == r) 	  
+          samp.index <- append(samp.index, sample(cvalue, sample.size)) 
+        }		  
+	    tx <- xdata[samp.index,]
+	    ty <- x$y[samp.index]
+	    mx <- xdata[-samp.index,]
+	    my <- x$y[-samp.index]	   
+	} else {
+        dat <- data.frame(y=x$y, xdata) 	
+	    tx <- dat[sample(1:nrow(dat), replace=TRUE),]
+		ty <- tx$y 
+		tx <- tx[,2:ncol(tx)]
+	    mx <- dat[-which(!rownames(dat) %in% rownames(tx)),]
+	    my <- mx$y
+		mx <- mx[,2:ncol(mx)] 
+    }		  
     rf.fit <- randomForest::randomForest(y=as.factor(my), x=mx, ytest=as.factor(ty), xtest=tx, ...)        
       cv.acc <- accuracy(rf.fit$test$predicted,  ty)
+	    if(bootstrap) boot.sample.size <- append(boot.sample.size, length(my))
         if(!length(classes) == length(unique(ty))) {
 	      #### add code to check for presence of classes and set to NA if absent classes occur   
 	    }		  
@@ -183,6 +207,7 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FA
 		  mdl.pa <- rbind(mdl.pa, mdl.acc$producers.accuracy) 
             mdl.oob <- rbind(mdl.oob, c(apply(rf.fit$err.rate, MARGIN = 2, stats::median),
 		                     mdl.acc$kappa))
+
 	}  
     names(cv.ua) <- c(classes) 
       names(cv.pa)  <- c(classes) 
@@ -195,6 +220,7 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FA
 	            model = list(model.users.accuracy = mdl.ua, 
 				             model.producers.accuracy=mdl.pa, 
 			    			 model.oob=mdl.oob) )
+	    if(bootstrap) acc[["boot.sample.size"]] <- boot.sample.size						 
       class(acc) <- c("rf.cv",  "classification", "list")
     return( acc )  							 
     }   

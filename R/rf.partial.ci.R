@@ -28,7 +28,7 @@
 #'
 #' @export
 rf.partial.ci <- function(m, x, yname, xname, lci=0.25, uci=0.75, delta=FALSE) {
-  if (!inherits(m, "randomForest")) stop("m is not randomForest class object")
+  if(!any(class(m) %in% c("randomForest","list"))) stop("m is not a randomForest object")
   if(m$type != "regression") stop("classification is not supported")
     conf.int <-(uci-lci)*100
     temp <- sort(x[, xname])

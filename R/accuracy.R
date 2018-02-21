@@ -7,33 +7,37 @@
 #' @return A list class object with the following components:
 #' \itemize{ 
 #' \item   PCC                    percent correctly classified (accuracy)
+#' \item   auc                    Area Under the ROC Curve
 #' \item   users.accuracy         The users accuracy  
 #' \item   producers.accuracy     The producers accuracy
 #' \item   kappa                  Cohen's Kappa (chance corrected accuracy)
+#' \item   true.skill             Hanssen-Kuiper skill score (aka true score statistic)
 #' \item   sensitivity            Sensitivity (aka, recall)
 #' \item   specificity            Specificity 
 #' \item   plr                    Positive Likelihood Ratio   
 #' \item   nlr                    Negative Likelihood Ratio  
-#' \item   typeI.error            Type I error
-#' \item   typeII.error           Type II error
-#' \item   gain                   Information gain (aka precision)
+#' \item   typeI.error            Type I error (omission)
+#' \item   typeII.error           Type II error (comission)
 #' \item   f.score                F-score
-#' \item   auc                    Area Under the ROC Curve
+#' \item   gain                   Information gain (aka precision)
+#' \item   mcc                    Matthew's correlation 
 #' \item   confusion              A confusion matrix 
 #'  }
 #' 
-#' @note sensitivity = true positives / ( true positives + false positives ) 
-#' @note specificity = true negatives / ( true negatives + false positives ) 
-#' @note Type I error = 1 - specificity
-#' @note Type II error = 1 - sensitivity
-#' @note Positive Likelihood Ratio  = sensitivity / (1 - specificity) 
-#' @note Negative Likelihood Ratio  = (1 - sensitivity) / specificity
-#' @note gain  = sensitivity / ( (true positives + true negatives) / n )
-#' @note auc = (tpr - fpr + 1) / 2
-#' @note F-Score = 2 * (precision * recall) / (precision + recall) 
-#' @note Hanssen-Kuiper skill score (aka true score statistic) = [(tp * tn) - (fp * fn)] / [(tp + fn) + (fp + tn)]
-#' @note The true skill score has an expected -1 to +1, with 0 representing no discrimination.   
-#' 
+#' @note
+#'   \itemize{ 
+#'   \item   sensitivity = true positives / ( true positives + false positives ) 
+#'   \item   specificity = true negatives / ( true negatives + false positives ) 
+#'   \item   Type I error = 1 - specificity
+#'   \item   Type II error = 1 - sensitivity
+#'   \item   Positive Likelihood Ratio  = sensitivity / (1 - specificity) 
+#'   \item   Negative Likelihood Ratio  = (1 - sensitivity) / specificity
+#'   \item   gain  = sensitivity / ( (true positives + true negatives) / n )
+#'   \item   auc = (tpr - fpr + 1) / 2
+#'   \item   F-Score = 2 * (precision * recall) / (precision + recall) 
+#'   \item   Hanssen-Kuiper skill score (aka true score statistic) = [(tp * tn) - (fp * fn)] / [(tp + fn) + (fp + tn)], The true skill score has an expected -1 to +1, with 0 representing no discrimination.   
+#'  } 
+#'
 #' @author Jeffrey S. Evans    <jeffrey_evans<at>tnc.org>
 #'
 #' @references
@@ -91,7 +95,7 @@ accuracy <- function (x, y) {
 	
     if( dim(t.xy)[1] == 2 ) {	
       n = sum(t.xy)
-      prevalence <- t.xy[1] / n 
+      # prevalence <- t.xy[1] / n 
       precision <- t.xy[1] / (t.xy[1] + t.xy[3])  
       tpr <- t.xy[1] / ( t.xy[1] +  t.xy[2] )    
       tnr <- t.xy[4] / ( t.xy[4] +  t.xy[3] )    
