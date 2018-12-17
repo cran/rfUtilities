@@ -5,7 +5,7 @@
 \title{Random Forest Classification or Regression Model Cross-validation}
 \usage{
 rf.crossValidation(x, xdata, p = 0.1, n = 99, seed = NULL,
-  normalize = FALSE, bootstrap = FALSE, ...)
+  normalize = FALSE, bootstrap = FALSE, trace = FALSE, ...)
 }
 \arguments{
 \item{x}{random forest object}
@@ -21,6 +21,8 @@ rf.crossValidation(x, xdata, p = 0.1, n = 99, seed = NULL,
 \item{normalize}{(FALSE/TRUE) For regression, should rmse, mbe and mae be normalized using (max(y) - min(y))}
 
 \item{bootstrap}{(FALSE/TRUE) Should a bootstrap sampling be applied. If FALSE, an n-th percent withold will be conducted}
+
+\item{trace}{Print iterations}
 
 \item{...}{Additional arguments passed to Random Forests}
 }
