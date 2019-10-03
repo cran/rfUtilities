@@ -3,6 +3,7 @@
 #'    
 #' @param x                 random forest object
 #' @param xdata             x data used in model
+#' @param ydata             optional y data used in model, default is to use x$y from model object
 #' @param p                 Proportion data withhold (default p=0.10)
 #' @param n                 Number of cross validations (default n=99)
 #' @param seed              Sets random seed in R global environment
@@ -26,6 +27,10 @@
 #' \item  fit.var.exp    Percent variance explained from specified fit model 
 #' \item  fit.mse        Mean Squared Error from specified fit model   
 #' \item  y.rmse         Root Mean Squared Error (observed vs. predicted) from each Bootstrap iteration (cross-validation)    
+#' \item  y.mbe          Mean Bias Error from each Bootstrapped model
+#' \item  y.mae          Mean Absolute Error from each Bootstrapped model
+#' \item  D              Test statistic from Kolmogorov-Smirnov distribution Test (y and estimate)
+#' \item  p.val          p-value for Kolmogorov-Smirnov distribution Test (y and estimate)
 #' \item  model.mse      Mean Squared Error from each Bootstrapped model
 #' \item  model.varExp   Percent variance explained from each Bootstrapped model   
 #'  }
@@ -63,12 +68,12 @@
 #' ( rf.mdl <- randomForest(iris[,1:4], iris[,"Species"], ntree=501) )
 #'   ( rf.cv <- rf.crossValidation(rf.mdl, iris[,1:4], p=0.10, n=99, ntree=501) )
 #'
-#'    # Plot cross validation verses model producers accuracy
+#'    # Plot cross validation versus model producers accuracy
 #'    par(mfrow=c(1,2)) 
 #'      plot(rf.cv, type = "cv", main = "CV producers accuracy")
 #'      plot(rf.cv, type = "model", main = "Model producers accuracy")
 #'
-#'    # Plot cross validation verses model oob
+#'    # Plot cross validation versus model oob
 #'    par(mfrow=c(1,2)) 
 #'      plot(rf.cv, type = "cv", stat = "oob", main = "CV oob error")
 #'      plot(rf.cv, type = "model", stat = "oob", main = "Model oob error")	  
@@ -77,7 +82,8 @@
 #' data(airquality)
 #' airquality <- na.omit(airquality) 
 #' rf.mdl <- randomForest(y=airquality[,"Ozone"], x=airquality[,2:4])
-#' ( rf.cv <- rf.crossValidation(rf.mdl, airquality[,2:4], p=0.10, n=99, ntree=501) )
+#' ( rf.cv <- rf.crossValidation(rf.mdl, airquality[,2:4], 
+#'                               p=0.10, n=99, ntree=501) )
 #'  par(mfrow=c(2,2))
 #'    plot(rf.cv)  
 #'    plot(rf.cv, stat = "mse")
@@ -89,12 +95,15 @@
 #'
 #' @exportClass rf.cv
 #' @export 	
-rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FALSE, 
+rf.crossValidation <- function(x, xdata, ydata=NULL, p=0.10, n=99, seed=NULL, normalize = FALSE, 
                                bootstrap = FALSE, trace = FALSE, ...) {
   if(!any(class(x) %in% c("randomForest","list"))) stop("x is not a randomForest object")
+  # add check length of y and dim of x
     if(!is.null(seed)) { set.seed(seed) }
 	  if(bootstrap) cat("Bootstrap sampling is being applied,", paste("p",p,sep="="), "argument is ignored", "\n")
-  if (x$type == "unsupervised") { stop("Unsupervised classification not supported")
+    
+  if (x$type == "unsupervised") { 
+    stop("Unsupervised classification not supported")
 
   ###########################################
   #### Start regression cross-validation ####	   
@@ -126,51 +135,68 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FA
               if( norm ) e <- e / diff(range(y))
             return( e )		   
         }
+	    # Kolmogorov-Smirnov Test (1=D, 2=p.value)
+        ks <- function(y, x, s = c(1,2)) {
+		  stats::ks.test(x, stats::ecdf(y))[s[1]]
+		}
     # Define validation vectors
-    y.rmse <- vector()  
- 	y.mae <- vector()
-	y.mbe <- vector()
-	model.varExp <- vector()
-	model.mse <- vector()
-    if(bootstrap) boot.sample.size <- vector()	
-      sample.size = round( (length(x$y) * p), digits=0) #population sample size 
+    y.rmse <- rep(NA, n)  
+ 	y.mae <- rep(NA, n)
+	y.mbe <- rep(NA, n)
+	model.varExp <- rep(NA, n)
+	model.mse <- rep(NA, n)
+	ks.p <- rep(NA, n)
+	ks.d <- rep(NA, n)
+	if( is.null(ydata) ) { ydata <- x$y }
+    if(bootstrap) boot.sample.size <- rep(NA, n)	
+      sample.size = round( (length(ydata) * p), digits=0) #population sample size 
 	  for(i in 1:n) {
 	    if(trace) cat("running iteration:", i, "\n")
-        dat <- data.frame(y=x$y, xdata)
+        dat <- data.frame(y=ydata, xdata)
         # Draw random sample		
 	    if(!bootstrap) {
-	      sidx <- sample(1:nrow(dat), sample.sizes[s])   
+	      sidx <- sample(1:nrow(dat), sample.size)   
 	        dat.sub <- dat[-sidx,]                   
-            dat.cv <- dat[sidx,]		            
+              dat.cv <- dat[sidx,]		            
 	    } else {	
 	      dat.sub <- dat[sample(1:nrow(dat), replace=TRUE),]              
           dat.cv <- dat[which(!rownames(dat) %in% rownames(dat.sub)),]	   
         }	
-	     rf.fit <- randomForest::randomForest(y=dat.sub[,"y"], x=dat.sub[,2:ncol(dat.sub)], ...)    
- 		   model.mse <- append(model.mse, rf.fit$mse[length(rf.fit$mse)]) 
-	         model.varExp <- append(model.varExp, round(100*rf.fit$rsq[length(rf.fit$rsq)], digits=2) )         
-		       y.rmse <- append(y.rmse, rmse(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)]), norm=normalize) )
-               y.mbe <- append(y.mbe, mbe(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)]), norm=normalize) )
-		   y.mae <- append(y.mae, mae(dat.cv[,"y"], stats::predict(rf.fit, newdata = dat.cv[,2:ncol(dat.cv)]), norm=normalize) )
-         if(bootstrap) boot.sample.size <- append(boot.sample.size, nrow(dat.cv) )
+	     rf.fit <- randomForest::randomForest(y=dat.sub[,"y"], 
+		                    x=dat.sub[,2:ncol(dat.sub)], ...)
+ 		   model.mse[i] <- rf.fit$mse[length(rf.fit$mse)]
+	       model.varExp[i] <- round(100*rf.fit$rsq[length(rf.fit$rsq)], digits=2)          
+		   y.rmse[i] <- rmse(dat.cv[,"y"], stats::predict(rf.fit, 
+		                    newdata = dat.cv[,2:ncol(dat.cv)]), 
+							norm=normalize) 
+           y.mbe[i] <- mbe(dat.cv[,"y"], stats::predict(rf.fit, 
+		                   newdata = dat.cv[,2:ncol(dat.cv)]), 
+						   norm=normalize) 
+		   y.mae[i] <- mae(dat.cv[,"y"], stats::predict(rf.fit, 
+		                   newdata = dat.cv[,2:ncol(dat.cv)]), 
+						   norm=normalize) 
+           ks.p[i] <- as.numeric(ks(dat.cv[,"y"], stats::predict(rf.fit, 
+		                 newdata = dat.cv[,2:ncol(dat.cv)]), s=2))  
+           ks.d[i] <- as.numeric(ks(dat.cv[,"y"], stats::predict(rf.fit, 
+		                 newdata = dat.cv[,2:ncol(dat.cv)]), s=1))
+		 if(bootstrap) boot.sample.size[i] <- nrow(dat.cv) 
 	  }		 
 	 r.cv <- list(fit.var.exp=round(100*x$rsq[length(x$rsq)], digits=2), 
-	              fit.mse=stats::median(x$mse),
-	              y.rmse = y.rmse, 
-				  y.mbe = y.mbe,
-				  y.mae = y.mae,
-				  model.mse = model.mse, 
-				  model.varExp = model.varExp )
-       class(r.cv) <- c("rf.cv", "regression", "list")
-     return( r.cv )
+	              fit.mse=stats::median(x$mse), y.rmse = y.rmse, 
+				  y.mbe = y.mbe, y.mae = y.mae, D = ks.d, 
+				  p.val = ks.p, model.mse = model.mse, 
+				  model.varExp = model.varExp )			
+      class(r.cv) <- c("rf.cv", "regression", "list")
+    return( r.cv )
 	 
    ###############################################
    #### Start classification cross-validation ####
    } else if (x$type == "classification") {
       cat("running:", x$type, "cross-validation", "with", n, "iterations", "\n")
+	    if( is.null(ydata) ) { ydata <- x$y }
     if(bootstrap) boot.sample.size <- vector()	
-    classes <- as.vector(levels( x$y ))	
-      sample.size = round( (length(x$y) * p) / length(x$classes), digits=0) 
+    classes <- as.vector(levels( ydata ))	
+      sample.size = round( (length(ydata) * p) / length(x$classes), digits=0) 
 	    cv.ua <- as.data.frame(array(0, dim=c(0,length(classes))))
 	      cv.pa <- as.data.frame(array(0, dim=c(0,length(classes))))
 	      mdl.ua <- as.data.frame(array(0, dim=c(0,length(classes)))) 
@@ -179,29 +205,28 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FA
 	cv.oob <- as.data.frame(array(0, dim=c(0,2+length(classes))))	
 	
     # Create class-level sample sizes
-	nclass <- length(unique(x$y)) 
+	nclass <- length(unique(ydata)) 
 	p.class = p / nclass
 	sample.sizes <- vector()
 	  for(s in 1:nclass) { 
-	    sample.sizes[s] <- round(length(x$y[x$y == unique(x$y)[s]]) * 
+	    sample.sizes[s] <- round(length(ydata[ydata == unique(ydata)[s]]) * 
 		                         p.class, digits=0)    
 	  } 
-	
       for(i in 1:n) {
 	    if(trace) cat("running iteration:", i, "\n")
         # Draw random sample		
 	    if(!bootstrap) {
           sidx <- list()				
             for(s in 1:nclass) {
-              sidx[[s]] <- sample(which(x$y %in% unique(x$y)[s]), sample.sizes[s])
+              sidx[[s]] <- sample(which(ydata %in% unique(ydata)[s]), sample.sizes[s])
             }
 			sidx <- unlist(sidx)  
               tx <- xdata[sidx,]
-              ty <- x$y[sidx]
+              ty <- ydata[sidx]
               mx <- xdata[-sidx,]
-              my <- x$y[-sidx]	           
+              my <- ydata[-sidx]	           
 	    } else {	
-          dat <- data.frame(y=x$y, xdata) 	
+          dat <- data.frame(y=ydata, xdata) 	
             tx <- dat[sample(1:nrow(dat), replace=TRUE),]
               ty <- tx$y 
                 tx <- tx[,2:ncol(tx)]
@@ -209,7 +234,8 @@ rf.crossValidation <- function(x, xdata, p=0.10, n=99, seed=NULL, normalize = FA
             my <- mx$y
           mx <- mx[,2:ncol(mx)] 
        }
-      rf.fit <- randomForest::randomForest(y=as.factor(my), x = mx, ytest=as.factor(ty), xtest=tx, ...)        
+      rf.fit <- randomForest::randomForest(y=as.factor(my), x = mx, ytest=as.factor(ty), 
+	                                       xtest=tx, ...)        
       options(warn=-1)
       cv.acc <- accuracy(rf.fit$test$predicted,  ty)
 	    if(bootstrap) boot.sample.size <- append(boot.sample.size, length(my))

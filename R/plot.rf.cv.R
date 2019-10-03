@@ -3,7 +3,8 @@
 #'
 #' @param  x        A rf.cv object
 #' @param  type     Which result to evaluate c("cv","model")
-#' @param  stat     Which statistic to plot: classification: "users.accuracy", "producers.accuracy", "kappa", "oob", regression: "rmse", "mse", "var.exp", "mae", "mbe"  
+#' @param  stat     Which statistic to plot: classification: "users.accuracy", "producers.accuracy", 
+#'                    "kappa", "oob", regression: "rmse", "mse", "var.exp", "mae", "mbe"  
 #' @param  ...      Additional arguments passed to plot
 #'
 #' @author Jeffrey S. Evans  <jeffrey_evans@@tnc.org>
@@ -11,7 +12,7 @@
 #' @method plot rf.cv 
 #'
 #' @export    	     
-plot.rf.cv <- function(x, type = "cv", stat = "producers.accuracy", ...) {
+plot.rf.cv <- function(x, type = "cv", stat = "kappa", ...) {
   if(class(x)[2] == "classification") {
   plot.class <- function(x, ...) {
     dots <- as.list(match.call(expand.dots = TRUE)[-1])
